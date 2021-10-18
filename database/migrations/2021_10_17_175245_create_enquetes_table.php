@@ -15,7 +15,9 @@ class CreateEnquetesTable extends Migration
     {
         Schema::create('enquetes', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->integer('id_usuario');
             $table->string('nome');
+            $table->integer('tentativas');
             $table->timestamps();
         });
     }

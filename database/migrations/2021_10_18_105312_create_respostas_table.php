@@ -15,7 +15,8 @@ class CreateRespostasTable extends Migration
     {
         Schema::create('respostas', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('enquete_id');
+            $table->integer('enquete_id')->foreign('enquete_id')->references('id')->on('enquetes');
+         
             $table->string('alternativa1');
             $table->string('alternativa2');
             $table->string('alternativa3')->nullable();
