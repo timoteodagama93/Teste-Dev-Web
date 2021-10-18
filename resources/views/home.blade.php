@@ -6,7 +6,7 @@
     <div class="row justify-content-center">
         <div class="col-md-4">
             <div class="card">
-                <div class="card-header">Início</div>
+                <div class="card-header">Nova enquete</div>
 
                 <div class="card-body">
 
