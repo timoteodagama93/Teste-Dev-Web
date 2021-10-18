@@ -20,4 +20,4 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 Route::post('nova_enquete', 'EnquetesController@nova_enquete')->name('nova');
 Route::post('editar_enquete', 'EnquetesController@editar_enquete');
-Route::post('visualizar_enquete', 'EnquetesController@nova_enquete');
+Route::get('listar_enquetes', 'EnquetesController@listar_enquetes');

@@ -10,6 +10,7 @@ import Vue from 'vue';
 import Enquetes from './components/Enquetes.vue';
 import UserEnquetes from './components/UserEnquetes.vue';
 import CriarEnquete from './components/CriarEnquete.vue';
+import LaravelVuePagination from 'laravel-vue-pagination';
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -25,6 +26,8 @@ Vue.component('example-component', require('./components/ExampleComponent.vue'))
 Vue.component('enquetes', Enquetes);
 Vue.component('criar-enquete', CriarEnquete);
 Vue.component('user-enquetes', UserEnquetes);
+Vue.component('pagination', LaravelVuePagination);
+
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

@@ -89,6 +89,12 @@ export default {
     console.log("Component mounted.");
   },
   methods: {
+    getResults(page = 1) {
+      axios.get("listar_enquetes?page=" + page).then((response) => {
+        console.log(response.data);
+        this.enquetes = response.data;
+      });
+    },
     criarEnquete() {
       axios
         .post("nova_enquete", {
@@ -97,7 +103,12 @@ export default {
           alternativa_2: this.alternativa_2,
           resposta: this.resposta,
         })
-        .then((response) => console.log(response));
+        .then(
+          (response) => console.log(response)
+          // Our method to GET results from a Laravel endpoint
+
+          
+        );
     },
   },
 };

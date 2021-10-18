@@ -11,7 +11,10 @@ class EnquetesController extends Controller
     public function nova_enquete()
     {
         $enquete = new Enquete();
+        $user = auth()->user();
+        $id = auth()->user()->id;
 
+        $enquete->id_usuario = $id;
         $enquete->nome = request()->nome_enquete;
         $enquete->resposta = request()->resposta;
         $enquete->save();
@@ -23,5 +26,11 @@ class EnquetesController extends Controller
             $resposta->save();
         }
         return 'ok';
+    }
+    public function listar_enquetes()
+    {
+        $enquetes = Enquete::paginate(2);
+
+        return response()->json($enquetes);
     }
 }
