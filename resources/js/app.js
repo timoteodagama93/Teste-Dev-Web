@@ -6,8 +6,9 @@
 
 require('./bootstrap');
 
-window.Vue = require('vue');
-
+import Vue from 'vue';
+import CreateComponent from './components/CreateComponent.vue';
+import CriarEnquete from './components/CriarEnquete.vue';
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -19,9 +20,9 @@ window.Vue = require('vue');
 // const files = require.context('./', true, /\.vue$/i);
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default));
 
-Vue.components('example-component', require('./components/ExampleComponent.vue'));
-Vue.components('create-component', require('./components/CreateComponent.vue'));
-Vue.components('criar-component', require('./components/CriarEnquete.vue'));
+Vue.component('example-component', require('./components/ExampleComponent.vue'));
+Vue.component('create-component', CreateComponent);
+Vue.component('criar-component', CriarEnquete);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

@@ -19,7 +19,7 @@
                 <div class="card-header">Enquetes</div>
 
                 <div class="card-body">
-                    <criar></criar>
+                    <criar-component></criar-component>
                 </div>
             </div>
         </div>
