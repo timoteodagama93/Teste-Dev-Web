@@ -19,9 +19,9 @@ window.Vue = require('vue');
 // const files = require.context('./', true, /\.vue$/i);
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default));
 
-Vue.component('example-component', require('./components/ExampleComponent.vue'));
-Vue.component('create-component', require('./components/CreateComponent.vue'));
-Vue.component('criar-enquete', require('./components/CriarEnqueteComponent.vue'));
+Vue.components('example-component', require('./components/ExampleComponent.vue'));
+Vue.components('create-component', require('./components/CreateComponent.vue'));
+Vue.components('criar-component', require('./components/CriarEnquete.vue'));
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
