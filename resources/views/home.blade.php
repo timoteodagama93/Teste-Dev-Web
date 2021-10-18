@@ -4,22 +4,22 @@
 <div class="container">
 
     <div class="row justify-content-center">
-        <div class="col-md-4">
+        <div class="col-md-5">
             <div class="card">
                 <div class="card-header">Nova enquete</div>
 
                 <div class="card-body">
 
-                    <create-component></creat-component>
+                    <criar-enquete></criar-enquete>
                 </div>
             </div>
         </div>
-        <div class="col-md-8">
+        <div class="col-md-7">
             <div class="card">
                 <div class="card-header">Enquetes</div>
 
                 <div class="card-body">
-                    <criar-component></criar-component>
+                <user-enquetes></user-enquetes>
                 </div>
             </div>
         </div>

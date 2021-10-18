@@ -1,11 +1,11 @@
 <template>
   <div class="container">
     <div class="row justify-content-center">
-      <div class="col-md-8">
+      <div class="col-md-12">
         <div class="card">
-          <div class="card-header">Nova Enquete</div>
+          <div class="card-header">Crie sua nova Enquete</div>
 
-          <div class="card-body">   
+          <div class="card-body">
             <form>
               <div class="mb-3">
                 <label for="nome_enquete" class="form-label"
@@ -13,10 +13,15 @@
                 >
                 <input
                   type="text"
+                  v-model="nome_enquete"
                   class="form-control"
                   id="nome_enquete"
                   required
                 />
+                <div id="novaHelper" class="form-text">
+                  Cada nova enquete deve ser criada com 2 alternativas, assim
+                  que criares a enquete podes adicionar mais oito alternativas.
+                </div>
               </div>
               <div class="mb-3">
                 <label for="alternativa_1" class="form-label"
@@ -42,9 +47,26 @@
                   id="alternativa_2"
                 />
               </div>
-             
-             
-              <button @click.prevent="criarEnquete" type="submit" class="btn btn-primary">Criar Enquete</button>
+              <div class="mb-3">
+                <label for="" class="form-label"
+                  >Escolha a resposta da enquete</label
+                >
+                <br />
+                <input type="radio" id="one" value="1" v-model="resposta" />
+                <label for="one">Iª Alternativa </label>
+                <br />
+                <input type="radio" id="two" value="2" v-model="resposta" />
+                <label for="two">IIª Alternativa </label>
+                <br />
+              </div>
+
+              <button
+                @click.prevent="criarEnquete"
+                type="submit"
+                class="btn btn-primary"
+              >
+                Criar Enquete
+              </button>
             </form>
           </div>
         </div>
@@ -55,25 +77,28 @@
 
 <script>
 export default {
-    data(){
-        return{
-            nome_enquete: '',
-            alternativa_1: '',
-            alternativa_2: '',
-
-        }
-    },
+  data() {
+    return {
+      nome_enquete: "",
+      alternativa_1: "",
+      alternativa_2: "",
+      resposta: "",
+    };
+  },
   mounted() {
     console.log("Component mounted.");
   },
   methods: {
-      criarEnquete(){
-          axios.post('nova_enquete', {
-            nome_enquete: this.nome_enquete,
-            alternativa_1: this.alternativa_1,
-            alternativa_2: this.alternativa_2,
-          }).then(response=>console.log(response));
-      }
-  }
-}
+    criarEnquete() {
+      axios
+        .post("nova_enquete", {
+          nome_enquete: this.nome_enquete,
+          alternativa_1: this.alternativa_1,
+          alternativa_2: this.alternativa_2,
+          resposta: this.resposta,
+        })
+        .then((response) => console.log(response));
+    },
+  },
+};
 </script>

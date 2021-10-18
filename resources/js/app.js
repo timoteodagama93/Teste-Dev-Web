@@ -7,7 +7,8 @@
 require('./bootstrap');
 
 import Vue from 'vue';
-import CreateComponent from './components/CreateComponent.vue';
+import Enquetes from './components/Enquetes.vue';
+import UserEnquetes from './components/UserEnquetes.vue';
 import CriarEnquete from './components/CriarEnquete.vue';
 /**
  * The following block of code may be used to automatically register your
@@ -21,8 +22,9 @@ import CriarEnquete from './components/CriarEnquete.vue';
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default));
 
 Vue.component('example-component', require('./components/ExampleComponent.vue'));
-Vue.component('create-component', CreateComponent);
-Vue.component('criar-component', CriarEnquete);
+Vue.component('enquetes', Enquetes);
+Vue.component('criar-enquete', CriarEnquete);
+Vue.component('user-enquetes', UserEnquetes);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
