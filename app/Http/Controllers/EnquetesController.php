@@ -29,7 +29,7 @@ class EnquetesController extends Controller
     }
     public function listar_enquetes()
     {
-        $enquetes = Enquete::paginate(2);
+        $enquetes = Enquete::paginate();
 
         return response()->json($enquetes);
     }

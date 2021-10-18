@@ -77,6 +77,9 @@
             @yield('content')
         </main>
     </div>
+
+      <!-- teleport target -->
+  <div id="modals"></div>
 </body>
 
 </html>

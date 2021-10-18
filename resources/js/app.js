@@ -8,9 +8,9 @@ require('./bootstrap');
 
 import Vue from 'vue';
 import Enquetes from './components/Enquetes.vue';
-import UserEnquetes from './components/UserEnquetes.vue';
-import CriarEnquete from './components/CriarEnquete.vue';
+import UserHome from './components/UserHome.vue';
 import LaravelVuePagination from 'laravel-vue-pagination';
+
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -24,9 +24,10 @@ import LaravelVuePagination from 'laravel-vue-pagination';
 
 Vue.component('example-component', require('./components/ExampleComponent.vue'));
 Vue.component('enquetes', Enquetes);
-Vue.component('criar-enquete', CriarEnquete);
-Vue.component('user-enquetes', UserEnquetes);
+Vue.component('user-home', UserHome);
 Vue.component('pagination', LaravelVuePagination);
+
+
 
 
 /**
@@ -38,3 +39,12 @@ Vue.component('pagination', LaravelVuePagination);
 const app = new Vue({
     el: '#app',
 });
+
+  
+import 'vue-universal-modal/dist/index.css'
+
+import VueUniversalModal from 'vue-universal-modal'
+
+app.use(VueUniversalModal, {
+  teleportTarget: '#modals'
+})
