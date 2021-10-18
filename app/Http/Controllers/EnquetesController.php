@@ -29,8 +29,16 @@ class EnquetesController extends Controller
     }
     public function listar_enquetes()
     {
-        $enquetes = Enquete::paginate();
+        $user = auth()->user();
+        $id = auth()->user()->id;
+        $enquetes = Enquete::where('id_usuario', $id)->paginate();;
 
         return response()->json($enquetes);
+    }
+    public function editar_enquete($enquete_id)
+    {
+        $saida = array_merge(array('enquete' => Enquete::find($enquete_id)), Resposta::where('enquete_id', $enquete_id)->get());
+
+        $saida = response()->json($saida);
     }
 }

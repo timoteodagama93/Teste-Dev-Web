@@ -1831,16 +1831,80 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
-    return {};
+    return {
+      criando: true,
+      nome_enquete: "",
+      alternativa_1: "",
+      alternativa_2: "",
+      resposta: "",
+      enquetes: {}
+    };
   },
   mounted: function mounted() {
-    console.log("Componente montado.");
+    console.log("Component mounted."); // Fetch initial results
+
+    this.getResults();
   },
   methods: {
-    mostrarEnquetes: function mostrarEnquetes() {
-      alert("Enquete criada");
+    //Editando
+    editarEnquete: function editarEnquete() {
+      this.criando = false;
+    },
+    // Our method to GET results from a Laravel endpoint
+    getResults: function getResults() {
+      var _this = this;
+
+      var page = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
+      axios.get("listar_enquetes?page=" + page).then(function (response) {
+        console.log(response.data);
+        _this.enquetes = response.data; // Fetch initial results
+
+        _this.getResults();
+      });
+    },
+    criarEnquete: function criarEnquete() {
+      var _this2 = this;
+
+      axios.post("nova_enquete", {
+        nome_enquete: this.nome_enquete,
+        alternativa_1: this.alternativa_1,
+        alternativa_2: this.alternativa_2,
+        resposta: this.resposta
+      }).then(function (response) {
+        console.log(response);
+        _this2.nome_enquete = "";
+        _this2.alternativa_1 = "";
+        _this2.alternativa_2 = "";
+        _this2.resposta = "";
+
+        _this2.getResults();
+      });
     }
   }
 });
@@ -2028,13 +2092,119 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
+      editando: false,
       nome_enquete: "",
       alternativa_1: "",
       alternativa_2: "",
       resposta: "",
+      editar__nome_enquete: "",
+      editar__alternativa_1: "",
+      editar__alternativa_2: "",
+      editar__resposta: "",
       enquetes: {}
     };
   },
@@ -2044,20 +2214,34 @@ __webpack_require__.r(__webpack_exports__);
     this.getResults();
   },
   methods: {
+    //Editando
+    editarEnquete: function editarEnquete(enquete_id) {
+      var _this = this;
+
+      this.editando = true;
+      axios.get('editar_enquete/' + enquete_id).then(function (response) {
+        console.log(response.data);
+        _this.editar__nome_enquete = response.data.nome;
+        /*this.editar__alternativa_1 = response.data.alternativa_1;
+        this.editar__alternativa_2 = response.data.alternativa_2;
+        this.editar__resposta = response.data.resposta;
+        */
+      });
+    },
     // Our method to GET results from a Laravel endpoint
     getResults: function getResults() {
-      var _this = this;
+      var _this2 = this;
 
       var page = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
       axios.get("listar_enquetes?page=" + page).then(function (response) {
         console.log(response.data);
-        _this.enquetes = response.data; // Fetch initial results
+        _this2.enquetes = response.data; // Fetch initial results
 
-        _this.getResults();
+        _this2.getResults();
       });
     },
     criarEnquete: function criarEnquete() {
-      var _this2 = this;
+      var _this3 = this;
 
       axios.post("nova_enquete", {
         nome_enquete: this.nome_enquete,
@@ -2066,12 +2250,12 @@ __webpack_require__.r(__webpack_exports__);
         resposta: this.resposta
       }).then(function (response) {
         console.log(response);
-        _this2.nome_enquete = "";
-        _this2.alternativa_1 = "";
-        _this2.alternativa_2 = "";
-        _this2.resposta = "";
+        _this3.nome_enquete = "";
+        _this3.alternativa_1 = "";
+        _this3.alternativa_2 = "";
+        _this3.resposta = "";
 
-        _this2.getResults();
+        _this3.getResults();
       });
     }
   }
@@ -35260,19 +35444,6 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/**
 
 /***/ }),
 
-/***/ "./node_modules/vue-universal-modal/dist/index.css":
-/*!*********************************************************!*\
-  !*** ./node_modules/vue-universal-modal/dist/index.css ***!
-  \*********************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-// extracted by mini-css-extract-plugin
-
-
-/***/ }),
-
 /***/ "./node_modules/popper.js/dist/esm/popper.js":
 /*!***************************************************!*\
   !*** ./node_modules/popper.js/dist/esm/popper.js ***!
@@ -38330,50 +38501,103 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
+  return _c("div", { staticClass: "container" }, [
+    _c("div", { staticClass: "row justify-content-center" }, [
+      _c("div", { staticClass: "col-md-12" }, [
+        _c("div", { staticClass: "card" }, [
+          _c("div", { staticClass: "card-header" }, [
+            _vm._v("Minhas Enquetes")
+          ]),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "card-body" },
+            [
+              _c(
+                "table",
+                { staticClass: "table" },
+                [
+                  _vm._m(0),
+                  _vm._v(" "),
+                  _vm._l(_vm.enquetes.data, function(enquete, index) {
+                    return _c("tbody", { key: enquete.id }, [
+                      _c("tr", [
+                        _c("th", { attrs: { scope: "row" } }, [
+                          _vm._v(_vm._s(index + 1))
+                        ]),
+                        _vm._v(" "),
+                        _c("td", [
+                          _vm._v(
+                            "\n                  " + _vm._s(enquete.nome) + " "
+                          ),
+                          _c("br"),
+                          _vm._v("Aos " + _vm._s(enquete.created_at)),
+                          _c("br"),
+                          _vm._v(
+                            "\n                  Tentativas de usuarios:\n                  "
+                          ),
+                          _c(
+                            "span",
+                            { staticClass: "badge bg-primary rounded-pill" },
+                            [_vm._v(_vm._s(enquete.tentativas))]
+                          )
+                        ]),
+                        _vm._v(" "),
+                        _c("td", [
+                          _c(
+                            "button",
+                            {
+                              staticClass: "btn btn-primary",
+                              attrs: { type: "button" },
+                              on: {
+                                click: function($event) {
+                                  _vm.criando = false
+                                }
+                              }
+                            },
+                            [
+                              _vm._v(
+                                "\n                    Responder Enquete\n                  "
+                              )
+                            ]
+                          )
+                        ])
+                      ])
+                    ])
+                  })
+                ],
+                2
+              ),
+              _vm._v(" "),
+              _c("pagination", { attrs: { data: _vm.enquetes } }, [
+                _c("span", { attrs: { slot: "prev-nav" }, slot: "prev-nav" }, [
+                  _vm._v("< Voltar")
+                ]),
+                _vm._v(" "),
+                _c("span", { attrs: { slot: "next-nav" }, slot: "next-nav" }, [
+                  _vm._v("Próxima >")
+                ])
+              ])
+            ],
+            1
+          )
+        ])
+      ])
+    ])
+  ])
 }
 var staticRenderFns = [
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "container" }, [
-      _c("div", { staticClass: "row justify-content-center" }, [
-        _c("div", { staticClass: "col-md-12" }, [
-          _c("div", { staticClass: "card" }, [
-            _c("div", { staticClass: "card-header" }, [
-              _vm._v("Enquetes do Sistema")
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "card-body" }, [
-              _c("ol", { staticClass: "list-group list-group-numbered" }, [
-                _c(
-                  "li",
-                  {
-                    staticClass:
-                      "\n                list-group-item\n                d-flex\n                justify-content-between\n                align-items-start\n              "
-                  },
-                  [
-                    _c("div", { staticClass: "ms-2 me-auto" }, [
-                      _c("div", { staticClass: "fw-bold" }, [
-                        _vm._v("Nome da enquete")
-                      ]),
-                      _vm._v(
-                        "\n                Cras justo odio\n              "
-                      )
-                    ]),
-                    _vm._v(" "),
-                    _c(
-                      "span",
-                      { staticClass: "badge bg-primary rounded-pill" },
-                      [_vm._v("14")]
-                    )
-                  ]
-                )
-              ])
-            ])
-          ])
-        ])
+    return _c("thead", [
+      _c("tr", [
+        _c("th", { attrs: { scope: "col" } }, [_vm._v("#")]),
+        _vm._v(" "),
+        _c("th", { attrs: { scope: "col" } }, [_vm._v("Nome da Enqueta")]),
+        _vm._v(" "),
+        _c("th", { attrs: { scope: "col" } }, [_vm._v("Acções")])
       ])
     ])
   }
@@ -38450,194 +38674,213 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "container" }, [
     _c("div", { staticClass: "row justify-content-center" }, [
-      _c("div", { staticClass: "col-md-5" }, [
-        _c("div", { staticClass: "card" }, [
-          _c("div", { staticClass: "card-header" }, [
-            _vm._v("Crie sua nova Enquete")
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "card-body" }, [
-            _c("form", [
-              _c("div", { staticClass: "mb-3" }, [
-                _c(
-                  "label",
-                  { staticClass: "form-label", attrs: { for: "nome_enquete" } },
-                  [_vm._v("Nomeie sua Enquete")]
-                ),
-                _vm._v(" "),
-                _c("input", {
-                  directives: [
+      _c(
+        "div",
+        {
+          directives: [
+            {
+              name: "show",
+              rawName: "v-show",
+              value: !_vm.editando,
+              expression: "!editando"
+            }
+          ],
+          staticClass: "col-md-5"
+        },
+        [
+          _c("div", { staticClass: "card" }, [
+            _c("div", { staticClass: "card-header" }, [
+              _vm._v("Crie sua nova Enquete")
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "card-body" }, [
+              _c("form", [
+                _c("div", { staticClass: "mb-3" }, [
+                  _c(
+                    "label",
                     {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.nome_enquete,
-                      expression: "nome_enquete"
-                    }
-                  ],
-                  staticClass: "form-control",
-                  attrs: { type: "text", id: "nome_enquete", required: "" },
-                  domProps: { value: _vm.nome_enquete },
-                  on: {
-                    input: function($event) {
-                      if ($event.target.composing) {
-                        return
+                      staticClass: "form-label",
+                      attrs: { for: "nome_enquete" }
+                    },
+                    [_vm._v("Nomeie sua Enquete")]
+                  ),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.nome_enquete,
+                        expression: "nome_enquete"
                       }
-                      _vm.nome_enquete = $event.target.value
+                    ],
+                    staticClass: "form-control",
+                    attrs: { type: "text", id: "nome_enquete", required: "" },
+                    domProps: { value: _vm.nome_enquete },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.nome_enquete = $event.target.value
+                      }
                     }
-                  }
-                }),
+                  }),
+                  _vm._v(" "),
+                  _c(
+                    "div",
+                    { staticClass: "form-text", attrs: { id: "novaHelper" } },
+                    [
+                      _vm._v(
+                        "\n                Cada nova enquete deve ser criada com 2 alternativas, assim\n                que criares a enquete podes adicionar mais oito alternativas.\n              "
+                      )
+                    ]
+                  )
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "mb-3" }, [
+                  _c(
+                    "label",
+                    {
+                      staticClass: "form-label",
+                      attrs: { for: "alternativa_1" }
+                    },
+                    [_vm._v("Iª Alternativa")]
+                  ),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.alternativa_1,
+                        expression: "alternativa_1"
+                      }
+                    ],
+                    staticClass: "form-control",
+                    attrs: { type: "text", id: "alternativa_1", required: "" },
+                    domProps: { value: _vm.alternativa_1 },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.alternativa_1 = $event.target.value
+                      }
+                    }
+                  })
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "mb-3" }, [
+                  _c(
+                    "label",
+                    {
+                      staticClass: "form-label",
+                      attrs: { for: "alternativa_2" }
+                    },
+                    [_vm._v("IIª Alternativa")]
+                  ),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.alternativa_2,
+                        expression: "alternativa_2"
+                      }
+                    ],
+                    staticClass: "form-control",
+                    attrs: { type: "text", required: "", id: "alternativa_2" },
+                    domProps: { value: _vm.alternativa_2 },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.alternativa_2 = $event.target.value
+                      }
+                    }
+                  })
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "mb-3" }, [
+                  _c(
+                    "label",
+                    { staticClass: "form-label", attrs: { for: "" } },
+                    [_vm._v("Escolha a resposta da enquete")]
+                  ),
+                  _vm._v(" "),
+                  _c("br"),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.resposta,
+                        expression: "resposta"
+                      }
+                    ],
+                    attrs: { type: "radio", id: "one", value: "1" },
+                    domProps: { checked: _vm._q(_vm.resposta, "1") },
+                    on: {
+                      change: function($event) {
+                        _vm.resposta = "1"
+                      }
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c("label", { attrs: { for: "one" } }, [
+                    _vm._v("Iª Alternativa ")
+                  ]),
+                  _vm._v(" "),
+                  _c("br"),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.resposta,
+                        expression: "resposta"
+                      }
+                    ],
+                    attrs: { type: "radio", id: "two", value: "2" },
+                    domProps: { checked: _vm._q(_vm.resposta, "2") },
+                    on: {
+                      change: function($event) {
+                        _vm.resposta = "2"
+                      }
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c("label", { attrs: { for: "two" } }, [
+                    _vm._v("IIª Alternativa ")
+                  ]),
+                  _vm._v(" "),
+                  _c("br")
+                ]),
                 _vm._v(" "),
                 _c(
-                  "div",
-                  { staticClass: "form-text", attrs: { id: "novaHelper" } },
-                  [
-                    _vm._v(
-                      "\n                Cada nova enquete deve ser criada com 2 alternativas, assim\n                que criares a enquete podes adicionar mais oito alternativas.\n              "
-                    )
-                  ]
+                  "button",
+                  {
+                    staticClass: "btn btn-primary",
+                    attrs: { type: "submit" },
+                    on: {
+                      click: function($event) {
+                        $event.preventDefault()
+                        return _vm.criarEnquete.apply(null, arguments)
+                      }
+                    }
+                  },
+                  [_vm._v("\n              Criar Enquete\n            ")]
                 )
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "mb-3" }, [
-                _c(
-                  "label",
-                  {
-                    staticClass: "form-label",
-                    attrs: { for: "alternativa_1" }
-                  },
-                  [_vm._v("Iª Alternativa")]
-                ),
-                _vm._v(" "),
-                _c("input", {
-                  directives: [
-                    {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.alternativa_1,
-                      expression: "alternativa_1"
-                    }
-                  ],
-                  staticClass: "form-control",
-                  attrs: { type: "text", id: "alternativa_1", required: "" },
-                  domProps: { value: _vm.alternativa_1 },
-                  on: {
-                    input: function($event) {
-                      if ($event.target.composing) {
-                        return
-                      }
-                      _vm.alternativa_1 = $event.target.value
-                    }
-                  }
-                })
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "mb-3" }, [
-                _c(
-                  "label",
-                  {
-                    staticClass: "form-label",
-                    attrs: { for: "alternativa_2" }
-                  },
-                  [_vm._v("IIª Alternativa")]
-                ),
-                _vm._v(" "),
-                _c("input", {
-                  directives: [
-                    {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.alternativa_2,
-                      expression: "alternativa_2"
-                    }
-                  ],
-                  staticClass: "form-control",
-                  attrs: { type: "text", required: "", id: "alternativa_2" },
-                  domProps: { value: _vm.alternativa_2 },
-                  on: {
-                    input: function($event) {
-                      if ($event.target.composing) {
-                        return
-                      }
-                      _vm.alternativa_2 = $event.target.value
-                    }
-                  }
-                })
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "mb-3" }, [
-                _c("label", { staticClass: "form-label", attrs: { for: "" } }, [
-                  _vm._v("Escolha a resposta da enquete")
-                ]),
-                _vm._v(" "),
-                _c("br"),
-                _vm._v(" "),
-                _c("input", {
-                  directives: [
-                    {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.resposta,
-                      expression: "resposta"
-                    }
-                  ],
-                  attrs: { type: "radio", id: "one", value: "1" },
-                  domProps: { checked: _vm._q(_vm.resposta, "1") },
-                  on: {
-                    change: function($event) {
-                      _vm.resposta = "1"
-                    }
-                  }
-                }),
-                _vm._v(" "),
-                _c("label", { attrs: { for: "one" } }, [
-                  _vm._v("Iª Alternativa ")
-                ]),
-                _vm._v(" "),
-                _c("br"),
-                _vm._v(" "),
-                _c("input", {
-                  directives: [
-                    {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.resposta,
-                      expression: "resposta"
-                    }
-                  ],
-                  attrs: { type: "radio", id: "two", value: "2" },
-                  domProps: { checked: _vm._q(_vm.resposta, "2") },
-                  on: {
-                    change: function($event) {
-                      _vm.resposta = "2"
-                    }
-                  }
-                }),
-                _vm._v(" "),
-                _c("label", { attrs: { for: "two" } }, [
-                  _vm._v("IIª Alternativa ")
-                ]),
-                _vm._v(" "),
-                _c("br")
-              ]),
-              _vm._v(" "),
-              _c(
-                "button",
-                {
-                  staticClass: "btn btn-primary",
-                  attrs: { type: "submit" },
-                  on: {
-                    click: function($event) {
-                      $event.preventDefault()
-                      return _vm.criarEnquete.apply(null, arguments)
-                    }
-                  }
-                },
-                [_vm._v("\n              Criar Enquete\n            ")]
-              )
+              ])
             ])
           ])
-        ])
-      ]),
+        ]
+      ),
       _vm._v(" "),
       _c("div", { staticClass: "col-md-7" }, [
         _c("div", { staticClass: "card" }, [
@@ -38684,10 +38927,10 @@ var render = function() {
                             "button",
                             {
                               staticClass: "btn btn-primary",
-                              attrs: { type: "button", id: "show-modal" },
+                              attrs: { type: "button" },
                               on: {
                                 click: function($event) {
-                                  _vm.showModal = true
+                                  return _vm.editarEnquete(enquete.id)
                                 }
                               }
                             },
@@ -38736,7 +38979,214 @@ var render = function() {
             1
           )
         ])
-      ])
+      ]),
+      _vm._v(" "),
+      _c(
+        "div",
+        {
+          directives: [
+            {
+              name: "show",
+              rawName: "v-show",
+              value: _vm.editando,
+              expression: "editando"
+            }
+          ]
+        },
+        [
+          _c("div", { staticClass: "modal-dialog" }, [
+            _c("div", { staticClass: "modal-content" }, [
+              _vm._m(1),
+              _vm._v(" "),
+              _c("div", { staticClass: "modal-body" }, [
+                _c("form", [
+                  _c("div", { staticClass: "mb-3" }, [
+                    _c(
+                      "label",
+                      {
+                        staticClass: "form-label",
+                        attrs: { for: "nome_enquete" }
+                      },
+                      [_vm._v("Nome da enquete")]
+                    ),
+                    _vm._v(" "),
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.editar__nome_enquete,
+                          expression: "editar__nome_enquete"
+                        }
+                      ],
+                      staticClass: "form-control",
+                      attrs: { type: "text", id: "nome_enquete", required: "" },
+                      domProps: { value: _vm.editar__nome_enquete },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.editar__nome_enquete = $event.target.value
+                        }
+                      }
+                    })
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "mb-3" }, [
+                    _c(
+                      "label",
+                      {
+                        staticClass: "form-label",
+                        attrs: { for: "alternativa_1" }
+                      },
+                      [_vm._v("Iª Alternativa")]
+                    ),
+                    _vm._v(" "),
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.editar__alternativa_1,
+                          expression: "editar__alternativa_1"
+                        }
+                      ],
+                      staticClass: "form-control",
+                      attrs: {
+                        type: "text",
+                        id: "alternativa_1",
+                        required: ""
+                      },
+                      domProps: { value: _vm.editar__alternativa_1 },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.editar__alternativa_1 = $event.target.value
+                        }
+                      }
+                    })
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "mb-3" }, [
+                    _c(
+                      "label",
+                      {
+                        staticClass: "form-label",
+                        attrs: { for: "alternativa_2" }
+                      },
+                      [_vm._v("IIª Alternativa")]
+                    ),
+                    _vm._v(" "),
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.editar__alternativa_2,
+                          expression: "editar__alternativa_2"
+                        }
+                      ],
+                      staticClass: "form-control",
+                      attrs: {
+                        type: "text",
+                        required: "",
+                        id: "alternativa_2"
+                      },
+                      domProps: { value: _vm.editar__alternativa_2 },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.editar__alternativa_2 = $event.target.value
+                        }
+                      }
+                    })
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "mb-3" }, [
+                    _c(
+                      "label",
+                      { staticClass: "form-label", attrs: { for: "" } },
+                      [_vm._v("Escolha a resposta da enquete")]
+                    ),
+                    _vm._v(" "),
+                    _c("br"),
+                    _vm._v(" "),
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.editar__resposta,
+                          expression: "editar__resposta"
+                        }
+                      ],
+                      attrs: { type: "radio", id: "one", value: "1" },
+                      domProps: { checked: _vm._q(_vm.editar__resposta, "1") },
+                      on: {
+                        change: function($event) {
+                          _vm.editar__resposta = "1"
+                        }
+                      }
+                    }),
+                    _vm._v(" "),
+                    _c("label", { attrs: { for: "one" } }, [
+                      _vm._v("Iª Alternativa ")
+                    ]),
+                    _vm._v(" "),
+                    _c("br"),
+                    _vm._v(" "),
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.editar__resposta,
+                          expression: "editar__resposta"
+                        }
+                      ],
+                      attrs: { type: "radio", id: "two", value: "2" },
+                      domProps: { checked: _vm._q(_vm.editar__resposta, "2") },
+                      on: {
+                        change: function($event) {
+                          _vm.editar__resposta = "2"
+                        }
+                      }
+                    }),
+                    _vm._v(" "),
+                    _c("label", { attrs: { for: "two" } }, [
+                      _vm._v("IIª Alternativa ")
+                    ]),
+                    _vm._v(" "),
+                    _c("br")
+                  ]),
+                  _vm._v(" "),
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-primary",
+                      attrs: { type: "submit" },
+                      on: {
+                        click: function($event) {
+                          $event.preventDefault()
+                          return _vm.criarEnquete.apply(null, arguments)
+                        }
+                      }
+                    },
+                    [_vm._v("\n                Criar Enquete\n              ")]
+                  )
+                ])
+              ]),
+              _vm._v(" "),
+              _vm._m(2)
+            ])
+          ])
+        ]
+      )
     ])
   ])
 }
@@ -38753,6 +39203,48 @@ var staticRenderFns = [
         _vm._v(" "),
         _c("th", { attrs: { scope: "col" } }, [_vm._v("Acções")])
       ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "modal-header" }, [
+      _c(
+        "h5",
+        { staticClass: "modal-title", attrs: { id: "exampleModalLabel" } },
+        [_vm._v("Editar Enquete")]
+      ),
+      _vm._v(" "),
+      _c("button", {
+        staticClass: "btn-close",
+        attrs: {
+          type: "button",
+          "data-bs-dismiss": "modal",
+          "aria-label": "Close"
+        }
+      })
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "modal-footer" }, [
+      _c(
+        "button",
+        {
+          staticClass: "btn btn-secondary",
+          attrs: { type: "button", "data-bs-dismiss": "modal" }
+        },
+        [_vm._v("\n              Close\n            ")]
+      ),
+      _vm._v(" "),
+      _c(
+        "button",
+        { staticClass: "btn btn-primary", attrs: { type: "button" } },
+        [_vm._v("\n              Save changes\n            ")]
+      )
     ])
   }
 ]
@@ -38871,363 +39363,6 @@ function normalizeComponent (
     options: options
   }
 }
-
-
-/***/ }),
-
-/***/ "./node_modules/vue-universal-modal/dist/index.js":
-/*!********************************************************!*\
-  !*** ./node_modules/vue-universal-modal/dist/index.js ***!
-  \********************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
-/* harmony export */   "CLASS_NAME": () => (/* binding */ CLASS_NAME),
-/* harmony export */   "PLUGIN_NAME": () => (/* binding */ PLUGIN_NAME)
-/* harmony export */ });
-/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm.js");
-
-
-const useA11Y = ({
-  modalRef,
-  latest,
-  show
-}) => {
-  let activeElement;
-
-  function setLastActiveElement(event) {
-    const isModalEvent = event.target.closest(`.${CLASS_NAME}`); // skip when this not latest modal
-
-    if (!latest.value) return; // set activeElement when fired outside this modal
-
-    if (!isModalEvent || isModalEvent !== modalRef.value) {
-      // skip when modal status is closing
-      if (isModalEvent && !isModalEvent.classList.contains(`${CLASS_NAME}-show`)) {
-        return;
-      }
-
-      activeElement = event.target;
-    }
-  }
-
-  function setFocus(value) {
-    if (value) {
-      if (modalRef.value) {
-        modalRef.value.focus();
-      }
-    } else {
-      if (activeElement) {
-        activeElement.focus();
-      }
-    }
-  }
-
-  (0,vue__WEBPACK_IMPORTED_MODULE_0__.onMounted)(() => {
-    document.addEventListener('click', setLastActiveElement);
-    (0,vue__WEBPACK_IMPORTED_MODULE_0__.watch)(() => show.value, value => {
-      (0,vue__WEBPACK_IMPORTED_MODULE_0__.nextTick)(() => setFocus(value));
-    }, {
-      immediate: show.value
-    });
-  });
-  (0,vue__WEBPACK_IMPORTED_MODULE_0__.onUnmounted)(() => {
-    document.removeEventListener('click', setLastActiveElement);
-  });
-};
-
-const useClose = ({
-  close,
-  closeClickDimmed,
-  closeKeyCode,
-  latest
-}) => {
-  let actionTarget = null;
-
-  function onMouseDownDimmed(e) {
-    actionTarget = e.target;
-  }
-
-  function onMouseUpDimmed(e) {
-    if (closeClickDimmed && actionTarget === e.target) {
-      close.value();
-    }
-
-    actionTarget = null;
-  }
-
-  function closeKeyEvent(event) {
-    if (event.keyCode === closeKeyCode && latest.value) {
-      close.value();
-    }
-  }
-
-  (0,vue__WEBPACK_IMPORTED_MODULE_0__.onMounted)(() => {
-    if (closeKeyCode) {
-      document.addEventListener('keyup', closeKeyEvent);
-    }
-  });
-  (0,vue__WEBPACK_IMPORTED_MODULE_0__.onUnmounted)(() => {
-    if (closeKeyCode) {
-      document.removeEventListener('keyup', closeKeyEvent);
-    }
-  });
-  return {
-    onMouseDownDimmed,
-    onMouseUpDimmed
-  };
-};
-
-const useOrder = ({
-  modalRef,
-  show
-}) => {
-  const {
-    visibleModals,
-    addVisibleModals,
-    removeVisibleModals
-  } = (0,vue__WEBPACK_IMPORTED_MODULE_0__.inject)(PLUGIN_NAME);
-  const latest = (0,vue__WEBPACK_IMPORTED_MODULE_0__.computed)(() => {
-    const arr = [...visibleModals.value.values()];
-
-    if (!arr.length || !modalRef.value) {
-      return false;
-    }
-
-    return arr[arr.length - 1] === modalRef.value;
-  });
-  (0,vue__WEBPACK_IMPORTED_MODULE_0__.watch)(() => show.value, () => {
-    (0,vue__WEBPACK_IMPORTED_MODULE_0__.nextTick)(() => {
-      if (!modalRef.value) return;
-
-      if (show.value) {
-        addVisibleModals(modalRef.value);
-      } else {
-        removeVisibleModals(modalRef.value);
-      }
-    });
-  }, {
-    immediate: true
-  });
-  return {
-    latest
-  };
-};
-
-var script = (0,vue__WEBPACK_IMPORTED_MODULE_0__.defineComponent)({
-  inheritAttrs: false,
-  props: {
-    close: {
-      type: Function,
-      default: () => undefined
-    },
-    disabled: {
-      type: Boolean,
-      default: false
-    },
-    modelValue: {
-      type: Boolean,
-      default: true
-    },
-    options: {
-      type: Object,
-      default: () => ({})
-    }
-  },
-  emits: ['before-enter', 'enter', 'after-enter', 'enter-cancelled', 'before-leave', 'leave', 'after-leave', 'leave-cancelled'],
-
-  setup(props, context) {
-    const {
-      teleportTarget
-    } = (0,vue__WEBPACK_IMPORTED_MODULE_0__.inject)(PLUGIN_NAME);
-    const {
-      close,
-      disabled,
-      options,
-      modelValue
-    } = (0,vue__WEBPACK_IMPORTED_MODULE_0__.toRefs)(props);
-    const inserted = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(modelValue.value === undefined ? true : modelValue.value);
-    const modalRef = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(null);
-    const show = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(!disabled.value);
-    const mergeOptions = {
-      transition: 300,
-      closeClickDimmed: true,
-      closeKeyCode: 27,
-      styleModalContent: {},
-      ...options.value
-    };
-    (0,vue__WEBPACK_IMPORTED_MODULE_0__.watch)([() => modelValue.value, () => disabled.value], () => {
-      const isShow = modelValue.value && !disabled.value;
-      show.value = isShow;
-
-      if (modelValue.value) {
-        inserted.value = modelValue.value;
-      }
-    }, {
-      immediate: true
-    });
-    const {
-      latest
-    } = useOrder({
-      modalRef,
-      show
-    });
-    useA11Y({
-      latest,
-      modalRef,
-      show
-    });
-    const {
-      onMouseDownDimmed,
-      onMouseUpDimmed
-    } = useClose({
-      close,
-      closeClickDimmed: mergeOptions.closeClickDimmed,
-      closeKeyCode: mergeOptions.closeKeyCode,
-      latest
-    });
-    const onTransitionEmit = {
-      beforeEnter: () => context.emit('before-enter'),
-      enter: () => context.emit('enter'),
-      afterEnter: () => context.emit('after-enter'),
-      enterCancelled: () => context.emit('enter-cancelled'),
-      beforeLeave: () => context.emit('before-leave'),
-      leave: () => context.emit('leave'),
-      afterLeave: () => {
-        context.emit('after-leave');
-
-        if (modelValue.value === false) {
-          inserted.value = false;
-        }
-      },
-      leaveCancelled: () => context.emit('leave-cancelled')
-    };
-    /**
-     * @deprecated
-     */
-
-    const emitClose = () => {
-      console.warn('emitClose was deprecated.\nhttps://github.com/hoiheart/vue-universal-modal#usage-modal');
-      if (close.value) close.value();
-    };
-
-    return {
-      CLASS_NAME,
-      emitClose,
-      inserted,
-      latest,
-      mergeOptions,
-      modalRef,
-      onMouseDownDimmed,
-      onMouseUpDimmed,
-      onTransitionEmit,
-      show,
-      teleportTarget,
-      transition: mergeOptions.transition ? mergeOptions.transition / 1000 + 's' : false
-    };
-  }
-
-});
-
-function render(_ctx, _cache, $props, $setup, $data, $options) {
-  return _ctx.inserted ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Teleport, {
-    key: 0,
-    to: _ctx.teleportTarget,
-    disabled: _ctx.disabled
-  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(vue__WEBPACK_IMPORTED_MODULE_0__.Transition, (0,vue__WEBPACK_IMPORTED_MODULE_0__.mergeProps)({
-    appear: "",
-    name: _ctx.CLASS_NAME
-  }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toHandlers)(_ctx.onTransitionEmit)), {
-    default: (0,vue__WEBPACK_IMPORTED_MODULE_0__.withCtx)(() => {
-      var _ctx$mergeOptions;
-
-      return [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("div", (0,vue__WEBPACK_IMPORTED_MODULE_0__.mergeProps)({
-        ref: "modalRef",
-        role: "dialog",
-        tabindex: "-1",
-        "aria-modal": "true",
-        "aria-label": "Modal window",
-        class: [_ctx.CLASS_NAME, {
-          [`${_ctx.CLASS_NAME}-show`]: _ctx.show
-        }, {
-          [`${_ctx.CLASS_NAME}-latest`]: _ctx.latest
-        }],
-        style: {
-          transitionDuration: _ctx.transition
-        }
-      }, _ctx.$attrs), [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)("div", {
-        class: `${_ctx.CLASS_NAME}-content`,
-        style: {
-          transitionDuration: _ctx.transition,
-          ...((_ctx$mergeOptions = _ctx.mergeOptions) === null || _ctx$mergeOptions === void 0 ? void 0 : _ctx$mergeOptions.styleModalContent)
-        },
-        onMousedown: _cache[1] || (_cache[1] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)((...args) => _ctx.onMouseDownDimmed && _ctx.onMouseDownDimmed(...args), ["self"])),
-        onMouseup: _cache[2] || (_cache[2] = (...args) => _ctx.onMouseUpDimmed && _ctx.onMouseUpDimmed(...args))
-      }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.renderSlot)(_ctx.$slots, "default", {
-        emitClose: _ctx.emitClose
-      }), (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderSlot)(_ctx.$slots, "close")], 38
-      /* CLASS, STYLE, HYDRATE_EVENTS */
-      )], 16
-      /* FULL_PROPS */
-      ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, _ctx.show]])];
-    }),
-    _: 3
-    /* FORWARDED */
-
-  }, 16
-  /* FULL_PROPS */
-  , ["name"])], 8
-  /* PROPS */
-  , ["to", "disabled"])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true);
-}
-
-script.render = render;
-script.__file = "src/Modal.vue";
-const PLUGIN_NAME = 'VueUniversalModal';
-const CLASS_NAME = 'vue-universal-modal';
-
-const install = (app, options = {}) => {
-  const {
-    teleportTarget = '',
-    teleportComponent = '',
-    teleportComponentId = '',
-    modalComponent = 'Modal'
-  } = options;
-
-  if (!teleportTarget) {
-    return console.error('teleportTarget is required.');
-  }
-
-  if (teleportComponent || teleportComponentId) {
-    return console.error('teleportComponent, teleportComponentId was deprecated. use teleportTarget instead. (https://github.com/hoiheart/vue-universal-modal)');
-  }
-
-  const visibleModals = (0,vue__WEBPACK_IMPORTED_MODULE_0__.ref)(new Set());
-
-  const addVisibleModals = el => {
-    visibleModals.value.add(el);
-  };
-
-  const removeVisibleModals = el => {
-    visibleModals.value.delete(el);
-  };
-
-  app.provide(PLUGIN_NAME, {
-    teleportTarget,
-    visibleModals: (0,vue__WEBPACK_IMPORTED_MODULE_0__.readonly)(visibleModals),
-    addVisibleModals,
-    removeVisibleModals
-  });
-  app.component(modalComponent, script);
-};
-
-var index = {
-  install
-};
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (index);
-
 
 
 /***/ }),
@@ -51381,8 +51516,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_UserHome_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/UserHome.vue */ "./resources/js/components/UserHome.vue");
 /* harmony import */ var laravel_vue_pagination__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! laravel-vue-pagination */ "./node_modules/laravel-vue-pagination/dist/laravel-vue-pagination.common.js");
 /* harmony import */ var laravel_vue_pagination__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(laravel_vue_pagination__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var vue_universal_modal_dist_index_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! vue-universal-modal/dist/index.css */ "./node_modules/vue-universal-modal/dist/index.css");
-/* harmony import */ var vue_universal_modal__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! vue-universal-modal */ "./node_modules/vue-universal-modal/dist/index.js");
 /**
  * First we will load all of this project's JavaScript dependencies which
  * includes Vue and other libraries. It is a great starting point when
@@ -51416,11 +51549,6 @@ vue__WEBPACK_IMPORTED_MODULE_3__["default"].component('pagination', (laravel_vue
 
 var app = new vue__WEBPACK_IMPORTED_MODULE_3__["default"]({
   el: '#app'
-});
-
-
-app.use(vue_universal_modal__WEBPACK_IMPORTED_MODULE_5__["default"], {
-  teleportTarget: '#modals'
 });
 })();
 

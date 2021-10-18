@@ -39,12 +39,6 @@ Vue.component('pagination', LaravelVuePagination);
 const app = new Vue({
     el: '#app',
 });
-
   
-import 'vue-universal-modal/dist/index.css'
 
-import VueUniversalModal from 'vue-universal-modal'
 
-app.use(VueUniversalModal, {
-  teleportTarget: '#modals'
-})

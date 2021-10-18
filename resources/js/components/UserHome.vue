@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="row justify-content-center">
-      <div class="col-md-5">
+      <div class="col-md-5" v-show="!editando">
         <div class="card">
           <div class="card-header">Crie sua nova Enquete</div>
 
@@ -104,14 +104,15 @@
                     <button
                       type="button"
                       class="btn btn-primary"
-                      id="show-modal" @click="showModal = true"
+                      @click="editarEnquete(enquete.id)"
                     >
                       Editar
                     </button>
                     <button
                       type="button"
                       class="btn btn-primary"
-                      id="show-modal" @click="showModal = false"
+                      id="show-modal"
+                      @click="showModal = false"
                     >
                       Apagar
                     </button>
@@ -127,9 +128,109 @@
           </div>
         </div>
       </div>
+
+      <!-- Modal -->
+      <div
+      v-show="editando"
+
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Editar Enquete</h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <form>
+                <div class="mb-3">
+                  <label for="nome_enquete" class="form-label"
+                    >Nome da enquete</label
+                  >
+                  <input
+                    type="text"
+                    v-model="editar__nome_enquete"
+                    class="form-control"
+                    id="nome_enquete"
+                    required
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="alternativa_1" class="form-label"
+                    >Iª Alternativa</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="alternativa_1"
+                    v-model="editar__alternativa_1"
+                    required
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="alternativa_2" class="form-label"
+                    >IIª Alternativa</label
+                  >
+                  <input
+                    type="text"
+                    required
+                    v-model="editar__alternativa_2"
+                    class="form-control"
+                    id="alternativa_2"
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="" class="form-label"
+                    >Escolha a resposta da enquete</label
+                  >
+                  <br />
+                  <input
+                    type="radio"
+                    id="one"
+                    value="1"
+                    v-model="editar__resposta"
+                  />
+                  <label for="one">Iª Alternativa </label>
+                  <br />
+                  <input
+                    type="radio"
+                    id="two"
+                    value="2"
+                    v-model="editar__resposta"
+                  />
+                  <label for="two">IIª Alternativa </label>
+                  <br />
+                </div>
+
+                <button
+                  @click.prevent="criarEnquete"
+                  type="submit"
+                  class="btn btn-primary"
+                >
+                  Criar Enquete
+                </button>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Close
+              </button>
+              <button type="button" class="btn btn-primary">
+                Save changes
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-
-
   </div>
 </template>
 
@@ -137,10 +238,15 @@
 export default {
   data() {
     return {
+      editando: false,
       nome_enquete: "",
       alternativa_1: "",
       alternativa_2: "",
       resposta: "",
+      editar__nome_enquete: "",
+      editar__alternativa_1: "",
+      editar__alternativa_2: "",
+      editar__resposta: "",
       enquetes: {},
     };
   },
@@ -150,6 +256,19 @@ export default {
     this.getResults();
   },
   methods: {
+    //Editando
+    editarEnquete(enquete_id) {
+        this.editando = true;
+      axios.get('editar_enquete/'+enquete_id)
+      .then(response=>{
+          console.log(response.data)
+        this.editar__nome_enquete = response.data.nome;
+        /*this.editar__alternativa_1 = response.data.alternativa_1;
+        this.editar__alternativa_2 = response.data.alternativa_2;
+        this.editar__resposta = response.data.resposta;
+        */
+      });
+    },
     // Our method to GET results from a Laravel endpoint
     getResults(page = 1) {
       axios.get("listar_enquetes?page=" + page).then((response) => {

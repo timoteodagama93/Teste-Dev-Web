@@ -18,6 +18,8 @@ class CreateEnquetesTable extends Migration
             $table->integer('id_usuario');
             $table->string('nome');
             $table->integer('tentativas');
+            $table->integer('acertos');
+            $table->integer('erros');
             $table->timestamps();
         });
     }
