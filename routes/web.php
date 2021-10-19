@@ -21,4 +21,6 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::post('nova_enquete', 'EnquetesController@nova_enquete')->name('nova');
 Route::post('editar_enquete', 'EnquetesController@editar_enquete');
 Route::get('listar_enquetes', 'EnquetesController@listar_enquetes');
+Route::get('user_enquetes', 'EnquetesController@listar_enquetes');
+Route::get('respostas_enquete/{enquete_id}', 'EnquetesController@respostas_enquete');
 Route::get('editar_enquete/{enquete_id}', 'EnquetesController@editar_enquete');

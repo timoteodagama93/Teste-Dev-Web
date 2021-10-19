@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Enquete;
 use App\Resposta;
@@ -29,16 +30,23 @@ class EnquetesController extends Controller
     }
     public function listar_enquetes()
     {
-        $user = auth()->user();
+        $enquetes = Enquete::paginate();;
+        return response()->json($enquetes);
+    }
+    public function user_enquetes()
+    {
         $id = auth()->user()->id;
-        $enquetes = Enquete::where('id_usuario', $id)->paginate();;
-
+        $enquetes = Enquete::where('id_usuario', $id)->paginate();
         return response()->json($enquetes);
     }
     public function editar_enquete($enquete_id)
     {
-        $saida = array_merge(array('enquete' => Enquete::find($enquete_id)), Resposta::where('enquete_id', $enquete_id)->get());
-
-        $saida = response()->json($saida);
+        $enquete = Enquete::find($enquete_id);
+        return response()->json($enquete);
+    }
+    public function respostas_enquete($enquete_id)
+    {
+        $respostas = DB::table('respostas')->where('enquete_id', '=', $enquete_id)->get();
+        return response()->json($respostas);
     }
 }
