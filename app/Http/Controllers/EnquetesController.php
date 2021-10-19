@@ -60,6 +60,15 @@ class EnquetesController extends Controller
         $enquete = Enquete::find($enquete_id);
         return response()->json($enquete);
     }
+    public function apagar_enquete($enquete_id)
+    {
+        /*
+        TODO: DELEÇÂO/DELETAR/APAGAR/13:07 min
+        DB::table('enquetes')->where('id', '=', $enquete_id)->delete();*/
+        $deletado = Enquete::where('id', $enquete_id)->delete();
+        return response()->json($deletado);
+    }
+
     public function respostas_enquete($enquete_id)
     {
         $respostas = DB::table('respostas')->where('enquete_id', '=', $enquete_id)->get();

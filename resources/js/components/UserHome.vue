@@ -152,7 +152,7 @@
                       type="button"
                       class="btn btn-primary"
                       id="show-modal"
-                      @click="showModal = false"
+                      @click="apagarEnquete(enquete_id)"
                     >
                       Apagar
                     </button>

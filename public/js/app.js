@@ -2258,28 +2258,36 @@ __webpack_require__.r(__webpack_exports__);
         _this2.editar__num_respostas = response.data.num_respostas;
       });
     },
-    //Apagar Resposta
-    apagarResposta: function apagarResposta(resposta_id, enquete_id) {
+    //Apagar Enquete
+    apagarEnquete: function apagarEnquete(enquete_id) {
       var _this3 = this;
 
+      axios.get("apagar_enquete/" + enquete_id).then(function (response) {
+        _this3.getResults();
+      });
+    },
+    //Apagar Resposta
+    apagarResposta: function apagarResposta(resposta_id, enquete_id) {
+      var _this4 = this;
+
       axios.get("apagar_resposta/" + resposta_id).then(function (response) {
-        _this3.getRespostas(enquete_id);
+        _this4.getRespostas(enquete_id);
       });
     },
     // Our method to GET results from a Laravel endpoint
     getResults: function getResults() {
-      var _this4 = this;
+      var _this5 = this;
 
       var page = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
       axios.get("user_enquetes?page=" + page).then(function (response) {
         console.log(response.data);
-        _this4.enquetes = response.data; // Fetch initial results
+        _this5.enquetes = response.data; // Fetch initial results
 
-        _this4.getResults();
+        _this5.getResults();
       });
     },
     adicionarAlternativa: function adicionarAlternativa() {
-      var _this5 = this;
+      var _this6 = this;
 
       console.log(this.editar__resposta);
       axios.post("nova_alternativa", {
@@ -2288,11 +2296,13 @@ __webpack_require__.r(__webpack_exports__);
         opcao_certa: this.editar__resposta,
         nova_alternativa: this.nova_alternativa
       }).then(function (response) {
-        _this5.nova_alternativa;
+        _this6.nova_alternativa = '';
+
+        _this6.getRespostas(_this6.editar__enquete_id);
       });
     },
     criarEnquete: function criarEnquete() {
-      var _this6 = this;
+      var _this7 = this;
 
       axios.post("nova_enquete", {
         nome_enquete: this.nome_enquete,
@@ -2301,12 +2311,12 @@ __webpack_require__.r(__webpack_exports__);
         resposta: this.resposta
       }).then(function (response) {
         console.log(response);
-        _this6.nome_enquete = "";
-        _this6.alternativa_1 = "";
-        _this6.alternativa_2 = "";
-        _this6.resposta = "";
+        _this7.nome_enquete = "";
+        _this7.alternativa_1 = "";
+        _this7.alternativa_2 = "";
+        _this7.resposta = "";
 
-        _this6.getResults();
+        _this7.getResults();
       });
     }
   }
@@ -39077,7 +39087,7 @@ var render = function() {
                               attrs: { type: "button", id: "show-modal" },
                               on: {
                                 click: function($event) {
-                                  _vm.showModal = false
+                                  return _vm.apagarEnquete(_vm.enquete_id)
                                 }
                               }
                             },
