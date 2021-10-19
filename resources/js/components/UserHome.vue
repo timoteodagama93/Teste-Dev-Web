@@ -296,6 +296,12 @@ export default {
         this.editar__num_respostas = response.data.num_respostas;
       });
     },
+    //Apagar Enquete
+    apagarEnquete(enquete_id) {
+      axios.get("apagar_enquete/" + enquete_id).then((response) => {
+          this.getResults();
+      });
+    },
     //Apagar Resposta
     apagarResposta(resposta_id, enquete_id) {
       axios.get("apagar_resposta/" + resposta_id).then((response) => {
@@ -321,7 +327,8 @@ export default {
           nova_alternativa: this.nova_alternativa,
         })
         .then((response) => {
-          this.nova_alternativa;
+          this.nova_alternativa = '';
+          this.getRespostas(this.editar__enquete_id);
         });
     },
     criarEnquete() {
