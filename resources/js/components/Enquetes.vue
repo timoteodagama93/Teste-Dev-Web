@@ -1,10 +1,10 @@
+
 <template>
   <div class="container">
     <div class="row justify-content-center">
-
-      <div class="col-md-12">
+      <div class="col-md-12" v-show="!respondendo">
         <div class="card">
-          <div class="card-header">Minhas Enquetes</div>
+          <div class="card-header">Enquetes</div>
 
           <div class="card-body">
             <table class="table">
@@ -23,7 +23,7 @@
                   <th scope="row">{{ index + 1 }}</th>
                   <td>
                     {{ enquete.nome }} <br />Aos {{ enquete.created_at }}<br />
-                    Tentativas de usuarios:
+                    Score:
                     <span class="badge bg-primary rounded-pill">{{
                       enquete.tentativas
                     }}</span>
@@ -34,9 +34,10 @@
                     <button
                       type="button"
                       class="btn btn-primary"
-                      @click="criando = false"
+                      @click="responderEnquete(enquete.id)"
+                      id="myBtn"
                     >
-                      Responder Enquete
+                      Responder
                     </button>
                   </td>
                 </tr>
@@ -50,6 +51,60 @@
           </div>
         </div>
       </div>
+
+      <div class="col-md-12" v-show="respondendo">
+        <div class="card">
+          <div class="card-header">A editar a enquete</div>
+          <div class="card-body">
+            <form>
+              <div class="mb-3">
+                <h3 class="form-label">{{ responder__nome_enquete }}</h3>
+              </div>
+
+              <table class="table">
+                <tbody
+                  v-for="(resposta, index) in respostas"
+                  :key="resposta.id"
+                >
+                  <tr>
+                    <th scope="row">{{ index + 1 }}</th>
+                    <td>
+                      {{ resposta.alternativa }} <br />
+                      <span class="badge bg-primary">
+                        Aos
+                        {{ resposta.created_at }}
+                      </span>
+                    </td>
+                    <td>
+                      <div class="mb-3">
+                        <input type="radio" v-on="selecionarResposta(index+1)" />
+                        <label >Marcar </label>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <hr />
+
+              <button
+                @click.prevent="guardarEnquete"
+                type="submit"
+                class="text-center btn btn-primary"
+              >
+                Enviar resposta
+              </button>
+              <button
+                @click.prevent="cancelarEdicao"
+                type="submit"
+                class="text-center btn btn-secondary"
+              >
+                Cancelar
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -58,12 +113,17 @@
 export default {
   data() {
     return {
-      criando: true,
+      respondendo: false,
       nome_enquete: "",
       alternativa_1: "",
       alternativa_2: "",
       resposta: "",
+      responder__resposta: "false",
+      responder__enquete_id: "",
+      responder__nome_enquete: "",
+      responder__num_respostas: 0,
       enquetes: {},
+      respostas: {},
     };
   },
   mounted() {
@@ -72,37 +132,36 @@ export default {
     this.getResults();
   },
   methods: {
-    //Editando
 
-    editarEnquete() {
-      this.criando = false;
+    //Selecionando uma resposta
+    selecionarResposta(opcao_numero){
+      this.resposta = opcao_numero;
     },
     // Our method to GET results from a Laravel endpoint
     getResults(page = 1) {
       axios.get("listar_enquetes?page=" + page).then((response) => {
         console.log(response.data);
         this.enquetes = response.data;
-        // Fetch initial results
-        this.getResults();
       });
     },
-    criarEnquete() {
-      axios
-        .post("nova_enquete", {
-          nome_enquete: this.nome_enquete,
-          alternativa_1: this.alternativa_1,
-          alternativa_2: this.alternativa_2,
-          resposta: this.resposta,
-        })
-        .then((response) => {
-          console.log(response);
 
-          this.nome_enquete = "";
-          this.alternativa_1 = "";
-          this.alternativa_2 = "";
-          this.resposta = "";
-          this.getResults();
-        });
+        //Obter as respostas da enquete
+    getRespostas(enquete_id) {
+      axios.get("respostas_enquete/" + enquete_id).then((response) => {
+        this.respostas = response.data;
+      });
+    },
+
+    //A responder a uma enquete
+    responderEnquete(enquete_id) {
+      this.respondendo = true;
+      this.getRespostas(enquete_id);
+      axios.get("editar_enquete/" + enquete_id).then((response) => {
+        console.log(response.data.enquete);
+        this.responder__nome_enquete = response.data.nome;
+        this.responder__num_respostas = response.data.num_respostas;
+        this.responder__enquete_id = enquete_id;
+      });
     },
   },
 };

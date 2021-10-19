@@ -31,35 +31,34 @@ class EnquetesController extends Controller
         return 'ok';
     }
 
-    public function nova_alternativa()
-    {
-        $num_alternativas = request()->num_respostas;
-        $resposta = new Resposta();
-        $resposta->enquete_id = request()->enquete_id;
-        if ($num_alternativas == 2)
-            $resposta->alternativa = request()->nova_alternativa;
-
-        $resposta->save();
-
-        return 'ok';
-    }
-
     public function listar_enquetes()
     {
         $enquetes = Enquete::paginate();;
         return response()->json($enquetes);
     }
+
     public function user_enquetes()
     {
         $id = auth()->user()->id;
         $enquetes = Enquete::where('id_usuario', $id)->paginate();
         return response()->json($enquetes);
     }
+
     public function editar_enquete($enquete_id)
     {
         $enquete = Enquete::find($enquete_id);
         return response()->json($enquete);
     }
+    public function guardar_enquete()
+    {
+        $enquete_id = request()->enquete_id; 
+        $nome       = request()->nome_enquete;
+        $enquete = Enquete::find($enquete_id);
+        $enquete->nome = $nome;
+        $enquete->save();
+        return 'Ok';
+    }
+
     public function apagar_enquete($enquete_id)
     {
         /*
@@ -67,11 +66,5 @@ class EnquetesController extends Controller
         DB::table('enquetes')->where('id', '=', $enquete_id)->delete();*/
         $deletado = Enquete::where('id', $enquete_id)->delete();
         return response()->json($deletado);
-    }
-
-    public function respostas_enquete($enquete_id)
-    {
-        $respostas = DB::table('respostas')->where('enquete_id', '=', $enquete_id)->get();
-        return response()->json($respostas);
     }
 }

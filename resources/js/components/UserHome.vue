@@ -1,42 +1,4 @@
-<style>
-/* The Modal (background) */
-.modal {
-  display: none; /* Hidden by default */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
-  left: 0;
-  top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0, 0, 0); /* Fallback color */
-  background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
-}
 
-/* Modal Content/Box */
-.modal-content {
-  background-color: #fefefe;
-  margin: 15% auto; /* 15% from the top and centered */
-  padding: 20px;
-  border: 1px solid #888;
-  width: 80%; /* Could be more or less, depending on screen size */
-}
-
-/* The Close Button */
-.close {
-  color: #aaa;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-  color: black;
-  text-decoration: none;
-  cursor: pointer;
-}
-</style>
 <template>
   <div class="container">
     <div class="row justify-content-center">
@@ -111,7 +73,7 @@
         </div>
       </div>
 
-      <div class="col-md-7">
+      <div class="col-md-7" v-show="!editando">
         <div class="card">
           <div class="card-header">Minhas Enquetes</div>
 
@@ -152,7 +114,7 @@
                       type="button"
                       class="btn btn-primary"
                       id="show-modal"
-                      @click="apagarEnquete(enquete_id)"
+                      @click="apagarEnquete(enquete.id)"
                     >
                       Apagar
                     </button>
@@ -169,7 +131,7 @@
         </div>
       </div>
 
-      <div class="col-md-5" v-show="editando">
+      <div class="col-md-8" v-show="editando">
         <div class="card">
           <div class="card-header">A editar a enquete</div>
           <div class="card-body">
@@ -185,6 +147,15 @@
                   id="nome_enquete"
                   required
                 />
+              </div>
+              <div class="mb-3">
+                <span
+                  >Não é possível apagar todas as respostas, devem sobrar duas.
+                  <br />
+                  <hr />
+                  Se a tua resposta estiver entre as apagadas, a resposta padrão
+                  é a primeira alternativa.</span
+                >
               </div>
               <table class="table">
                 <tbody
@@ -212,7 +183,7 @@
                   </tr>
                 </tbody>
               </table>
-              <div class="mb-3">
+              <div class="mb-3" v-show="mostrar_add_alternativa">
                 <label for="alternativa_2" class="form-label"
                   >Adicionar nova resposta</label
                 >
@@ -225,7 +196,12 @@
                 />
               </div>
               <div class="mb-3">
-                <input type="radio" id="one" v-model="editar__resposta" />
+                <input
+                  type="radio"
+                  id="one"
+                  value="true"
+                  v-model="editar__resposta"
+                />
                 <label for="one">Marcar a alternativa como a resposta </label>
               </div>
               <button
@@ -239,11 +215,18 @@
               <hr />
 
               <button
-                @click.prevent="criarEnquete"
+                @click.prevent="guardarEnquete"
                 type="submit"
                 class="text-center btn btn-primary"
               >
                 Salvar edição da enquete
+              </button>
+              <button
+                @click.prevent="cancelarEdicao"
+                type="submit"
+                class="text-center btn btn-secondary"
+              >
+                Cancelar edição e voltar
               </button>
             </form>
           </div>
@@ -262,15 +245,14 @@ export default {
       alternativa_1: "",
       alternativa_2: "",
       resposta: "",
+      editar__resposta: "false",
       editar__enquete_id: "",
       editar__nome_enquete: "",
-      editar__alternativa_1: "",
-      editar__alternativa_2: "",
-      editar__resposta: "",
       editar__num_respostas: 0,
       nova_alternativa: "",
       enquetes: {},
       respostas: {},
+      mostrar_add_alternativa: true,
     };
   },
   mounted() {
@@ -289,23 +271,54 @@ export default {
     editarEnquete(enquete_id) {
       this.editando = true;
       this.editar__enquete_id = enquete_id;
+
       this.getRespostas(enquete_id);
       axios.get("editar_enquete/" + enquete_id).then((response) => {
         console.log(response.data.enquete);
         this.editar__nome_enquete = response.data.nome;
         this.editar__num_respostas = response.data.num_respostas;
+        if (this.editar__num_respostas === 10)
+          this.mostrar_add_alternativa = false;
       });
+    },
+    //Cancelar a edição da enquete
+    cancelarEdicao() { 
+      this.editar__enquete_id = "";
+      this.editar__nome_enquete = "";
+      this.nova_alternativa = "";
+      this.editar__num_respostas = 0;
+      this.editando = false;
+      this.respostas = {};
+    },
+    //Guardando a edição da enquete
+    guardarEnquete() {
+      axios
+        .post("guardar_enquete", {
+          enquete_id: this.editar__enquete_id,
+          nome_enquete: this.editar__nome_enquete,
+        })
+        .then((response) => {
+          console.log(response);
+
+          this.editando = false;
+
+          this.editar__enquete_id = "";
+          this.editar__nome_enquete = "";
+          this.nova_alternativa = "";
+          this.editar__num_respostas = 0;
+          this.getResults();
+        });
     },
     //Apagar Enquete
     apagarEnquete(enquete_id) {
       axios.get("apagar_enquete/" + enquete_id).then((response) => {
-          this.getResults();
+        this.getRespostas(enquete_id);
       });
     },
     //Apagar Resposta
-    apagarResposta(resposta_id, enquete_id) {
+    apagarResposta(resposta_id) {
       axios.get("apagar_resposta/" + resposta_id).then((response) => {
-          this.getRespostas(enquete_id);
+        this.getRespostas(this.editar__enquete_id);
       });
     },
     // Our method to GET results from a Laravel endpoint
@@ -313,8 +326,6 @@ export default {
       axios.get("user_enquetes?page=" + page).then((response) => {
         console.log(response.data);
         this.enquetes = response.data;
-        // Fetch initial results
-        this.getResults();
       });
     },
     adicionarAlternativa() {
@@ -327,7 +338,8 @@ export default {
           nova_alternativa: this.nova_alternativa,
         })
         .then((response) => {
-          this.nova_alternativa = '';
+          this.nova_alternativa = "";
+          this.editar__resposta = "false";
           this.getRespostas(this.editar__enquete_id);
         });
     },

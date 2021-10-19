@@ -1855,15 +1855,75 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
-      criando: true,
+      respondendo: false,
       nome_enquete: "",
       alternativa_1: "",
       alternativa_2: "",
       resposta: "",
-      enquetes: {}
+      responder__resposta: "false",
+      responder__enquete_id: "",
+      responder__nome_enquete: "",
+      responder__num_respostas: 0,
+      enquetes: {},
+      respostas: {}
     };
   },
   mounted: function mounted() {
@@ -1872,9 +1932,9 @@ __webpack_require__.r(__webpack_exports__);
     this.getResults();
   },
   methods: {
-    //Editando
-    editarEnquete: function editarEnquete() {
-      this.criando = false;
+    //Selecionando uma resposta
+    selecionarResposta: function selecionarResposta(opcao_numero) {
+      this.resposta = opcao_numero;
     },
     // Our method to GET results from a Laravel endpoint
     getResults: function getResults() {
@@ -1883,27 +1943,28 @@ __webpack_require__.r(__webpack_exports__);
       var page = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
       axios.get("listar_enquetes?page=" + page).then(function (response) {
         console.log(response.data);
-        _this.enquetes = response.data; // Fetch initial results
-
-        _this.getResults();
+        _this.enquetes = response.data;
       });
     },
-    criarEnquete: function criarEnquete() {
+    //Obter as respostas da enquete
+    getRespostas: function getRespostas(enquete_id) {
       var _this2 = this;
 
-      axios.post("nova_enquete", {
-        nome_enquete: this.nome_enquete,
-        alternativa_1: this.alternativa_1,
-        alternativa_2: this.alternativa_2,
-        resposta: this.resposta
-      }).then(function (response) {
-        console.log(response);
-        _this2.nome_enquete = "";
-        _this2.alternativa_1 = "";
-        _this2.alternativa_2 = "";
-        _this2.resposta = "";
+      axios.get("respostas_enquete/" + enquete_id).then(function (response) {
+        _this2.respostas = response.data;
+      });
+    },
+    //A responder a uma enquete
+    responderEnquete: function responderEnquete(enquete_id) {
+      var _this3 = this;
 
-        _this2.getResults();
+      this.respondendo = true;
+      this.getRespostas(enquete_id);
+      axios.get("editar_enquete/" + enquete_id).then(function (response) {
+        console.log(response.data.enquete);
+        _this3.responder__nome_enquete = response.data.nome;
+        _this3.responder__num_respostas = response.data.num_respostas;
+        _this3.responder__enquete_id = enquete_id;
       });
     }
   }
@@ -2195,23 +2256,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
@@ -2220,15 +2264,14 @@ __webpack_require__.r(__webpack_exports__);
       alternativa_1: "",
       alternativa_2: "",
       resposta: "",
+      editar__resposta: "false",
       editar__enquete_id: "",
       editar__nome_enquete: "",
-      editar__alternativa_1: "",
-      editar__alternativa_2: "",
-      editar__resposta: "",
       editar__num_respostas: 0,
       nova_alternativa: "",
       enquetes: {},
-      respostas: {}
+      respostas: {},
+      mostrar_add_alternativa: true
     };
   },
   mounted: function mounted() {
@@ -2256,38 +2299,64 @@ __webpack_require__.r(__webpack_exports__);
         console.log(response.data.enquete);
         _this2.editar__nome_enquete = response.data.nome;
         _this2.editar__num_respostas = response.data.num_respostas;
+        if (_this2.editar__num_respostas === 10) _this2.mostrar_add_alternativa = false;
+      });
+    },
+    //Cancelar a edição da enquete
+    cancelarEdicao: function cancelarEdicao() {
+      this.editar__enquete_id = "";
+      this.editar__nome_enquete = "";
+      this.nova_alternativa = "";
+      this.editar__num_respostas = 0;
+      this.editando = false;
+      this.respostas = {};
+    },
+    //Guardando a edição da enquete
+    guardarEnquete: function guardarEnquete() {
+      var _this3 = this;
+
+      axios.post("guardar_enquete", {
+        enquete_id: this.editar__enquete_id,
+        nome_enquete: this.editar__nome_enquete
+      }).then(function (response) {
+        console.log(response);
+        _this3.editando = false;
+        _this3.editar__enquete_id = "";
+        _this3.editar__nome_enquete = "";
+        _this3.nova_alternativa = "";
+        _this3.editar__num_respostas = 0;
+
+        _this3.getResults();
       });
     },
     //Apagar Enquete
     apagarEnquete: function apagarEnquete(enquete_id) {
-      var _this3 = this;
+      var _this4 = this;
 
       axios.get("apagar_enquete/" + enquete_id).then(function (response) {
-        _this3.getResults();
+        _this4.getRespostas(enquete_id);
       });
     },
     //Apagar Resposta
-    apagarResposta: function apagarResposta(resposta_id, enquete_id) {
-      var _this4 = this;
+    apagarResposta: function apagarResposta(resposta_id) {
+      var _this5 = this;
 
       axios.get("apagar_resposta/" + resposta_id).then(function (response) {
-        _this4.getRespostas(enquete_id);
+        _this5.getRespostas(_this5.editar__enquete_id);
       });
     },
     // Our method to GET results from a Laravel endpoint
     getResults: function getResults() {
-      var _this5 = this;
+      var _this6 = this;
 
       var page = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
       axios.get("user_enquetes?page=" + page).then(function (response) {
         console.log(response.data);
-        _this5.enquetes = response.data; // Fetch initial results
-
-        _this5.getResults();
+        _this6.enquetes = response.data;
       });
     },
     adicionarAlternativa: function adicionarAlternativa() {
-      var _this6 = this;
+      var _this7 = this;
 
       console.log(this.editar__resposta);
       axios.post("nova_alternativa", {
@@ -2296,13 +2365,14 @@ __webpack_require__.r(__webpack_exports__);
         opcao_certa: this.editar__resposta,
         nova_alternativa: this.nova_alternativa
       }).then(function (response) {
-        _this6.nova_alternativa = '';
+        _this7.nova_alternativa = "";
+        _this7.editar__resposta = "false";
 
-        _this6.getRespostas(_this6.editar__enquete_id);
+        _this7.getRespostas(_this7.editar__enquete_id);
       });
     },
     criarEnquete: function criarEnquete() {
-      var _this7 = this;
+      var _this8 = this;
 
       axios.post("nova_enquete", {
         nome_enquete: this.nome_enquete,
@@ -2311,65 +2381,15 @@ __webpack_require__.r(__webpack_exports__);
         resposta: this.resposta
       }).then(function (response) {
         console.log(response);
-        _this7.nome_enquete = "";
-        _this7.alternativa_1 = "";
-        _this7.alternativa_2 = "";
-        _this7.resposta = "";
+        _this8.nome_enquete = "";
+        _this8.alternativa_1 = "";
+        _this8.alternativa_2 = "";
+        _this8.resposta = "";
 
-        _this7.getResults();
+        _this8.getResults();
       });
     }
   }
-});
-
-/***/ }),
-
-/***/ "./resources/js/app.js":
-/*!*****************************!*\
-  !*** ./resources/js/app.js ***!
-  \*****************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm.js");
-/* harmony import */ var _components_Enquetes_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./components/Enquetes.vue */ "./resources/js/components/Enquetes.vue");
-/* harmony import */ var _components_UserHome_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/UserHome.vue */ "./resources/js/components/UserHome.vue");
-/* harmony import */ var laravel_vue_pagination__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! laravel-vue-pagination */ "./node_modules/laravel-vue-pagination/dist/laravel-vue-pagination.common.js");
-/* harmony import */ var laravel_vue_pagination__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(laravel_vue_pagination__WEBPACK_IMPORTED_MODULE_2__);
-/**
- * First we will load all of this project's JavaScript dependencies which
- * includes Vue and other libraries. It is a great starting point when
- * building robust, powerful web applications using Vue and Laravel.
- */
-__webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
-
-
-
-
-
-/**
- * The following block of code may be used to automatically register your
- * Vue components. It will recursively scan this directory for the Vue
- * components and automatically register them with their "basename".
- *
- * Eg. ./components/ExampleComponent.vue -> <example-component></example-component>
- */
-// const files = require.context('./', true, /\.vue$/i);
-// files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default));
-
-vue__WEBPACK_IMPORTED_MODULE_3__["default"].component('example-component', __webpack_require__(/*! ./components/ExampleComponent.vue */ "./resources/js/components/ExampleComponent.vue"));
-vue__WEBPACK_IMPORTED_MODULE_3__["default"].component('enquetes', _components_Enquetes_vue__WEBPACK_IMPORTED_MODULE_0__["default"]);
-vue__WEBPACK_IMPORTED_MODULE_3__["default"].component('user-home', _components_UserHome_vue__WEBPACK_IMPORTED_MODULE_1__["default"]);
-vue__WEBPACK_IMPORTED_MODULE_3__["default"].component('pagination', (laravel_vue_pagination__WEBPACK_IMPORTED_MODULE_2___default()));
-/**
- * Next, we will create a fresh Vue application instance and attach it to
- * the page. Then, you may begin adding components to this application
- * or customize the JavaScript scaffolding to fit your unique needs.
- */
-
-var app = new vue__WEBPACK_IMPORTED_MODULE_3__["default"]({
-  el: '#app'
 });
 
 /***/ }),
@@ -35555,19 +35575,6 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/**
 
 /***/ }),
 
-/***/ "./node_modules/mini-css-extract-plugin/dist/loader.js??clonedRuleSet-8[0].rules[0].use[0]!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-8[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-8[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/UserHome.vue?vue&type=style&index=0&lang=css&":
-/*!*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/mini-css-extract-plugin/dist/loader.js??clonedRuleSet-8[0].rules[0].use[0]!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-8[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-8[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/UserHome.vue?vue&type=style&index=0&lang=css& ***!
-  \*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-// extracted by mini-css-extract-plugin
-
-
-/***/ }),
-
 /***/ "./node_modules/popper.js/dist/esm/popper.js":
 /*!***************************************************!*\
   !*** ./node_modules/popper.js/dist/esm/popper.js ***!
@@ -38484,17 +38491,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _UserHome_vue_vue_type_template_id_61225096___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./UserHome.vue?vue&type=template&id=61225096& */ "./resources/js/components/UserHome.vue?vue&type=template&id=61225096&");
 /* harmony import */ var _UserHome_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./UserHome.vue?vue&type=script&lang=js& */ "./resources/js/components/UserHome.vue?vue&type=script&lang=js&");
-/* harmony import */ var _UserHome_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./UserHome.vue?vue&type=style&index=0&lang=css& */ "./resources/js/components/UserHome.vue?vue&type=style&index=0&lang=css&");
-/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! !../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
 
-;
 
 
 /* normalize component */
-
-var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
+;
+var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
   _UserHome_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
   _UserHome_vue_vue_type_template_id_61225096___WEBPACK_IMPORTED_MODULE_0__.render,
   _UserHome_vue_vue_type_template_id_61225096___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns,
@@ -38557,19 +38562,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_0_rules_0_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_UserHome_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./UserHome.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/UserHome.vue?vue&type=script&lang=js&");
  /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_babel_loader_lib_index_js_clonedRuleSet_5_0_rules_0_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_UserHome_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
-
-/***/ }),
-
-/***/ "./resources/js/components/UserHome.vue?vue&type=style&index=0&lang=css&":
-/*!*******************************************************************************!*\
-  !*** ./resources/js/components/UserHome.vue?vue&type=style&index=0&lang=css& ***!
-  \*******************************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_mini_css_extract_plugin_dist_loader_js_clonedRuleSet_8_0_rules_0_use_0_node_modules_css_loader_dist_cjs_js_clonedRuleSet_8_0_rules_0_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_8_0_rules_0_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_UserHome_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/mini-css-extract-plugin/dist/loader.js??clonedRuleSet-8[0].rules[0].use[0]!../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-8[0].rules[0].use[1]!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-8[0].rules[0].use[2]!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./UserHome.vue?vue&type=style&index=0&lang=css& */ "./node_modules/mini-css-extract-plugin/dist/loader.js??clonedRuleSet-8[0].rules[0].use[0]!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-8[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-8[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/UserHome.vue?vue&type=style&index=0&lang=css&");
-
 
 /***/ }),
 
@@ -38642,24 +38634,137 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "container" }, [
     _c("div", { staticClass: "row justify-content-center" }, [
-      _c("div", { staticClass: "col-md-12" }, [
-        _c("div", { staticClass: "card" }, [
-          _c("div", { staticClass: "card-header" }, [
-            _vm._v("Minhas Enquetes")
-          ]),
-          _vm._v(" "),
-          _c(
-            "div",
-            { staticClass: "card-body" },
-            [
-              _c(
-                "table",
-                { staticClass: "table" },
-                [
-                  _vm._m(0),
+      _c(
+        "div",
+        {
+          directives: [
+            {
+              name: "show",
+              rawName: "v-show",
+              value: !_vm.respondendo,
+              expression: "!respondendo"
+            }
+          ],
+          staticClass: "col-md-12"
+        },
+        [
+          _c("div", { staticClass: "card" }, [
+            _c("div", { staticClass: "card-header" }, [_vm._v("Enquetes")]),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "card-body" },
+              [
+                _c(
+                  "table",
+                  { staticClass: "table" },
+                  [
+                    _vm._m(0),
+                    _vm._v(" "),
+                    _vm._l(_vm.enquetes.data, function(enquete, index) {
+                      return _c("tbody", { key: enquete.id }, [
+                        _c("tr", [
+                          _c("th", { attrs: { scope: "row" } }, [
+                            _vm._v(_vm._s(index + 1))
+                          ]),
+                          _vm._v(" "),
+                          _c("td", [
+                            _vm._v(
+                              "\n                  " +
+                                _vm._s(enquete.nome) +
+                                " "
+                            ),
+                            _c("br"),
+                            _vm._v("Aos " + _vm._s(enquete.created_at)),
+                            _c("br"),
+                            _vm._v(
+                              "\n                  Score:\n                  "
+                            ),
+                            _c(
+                              "span",
+                              { staticClass: "badge bg-primary rounded-pill" },
+                              [_vm._v(_vm._s(enquete.tentativas))]
+                            )
+                          ]),
+                          _vm._v(" "),
+                          _c("td", [
+                            _c(
+                              "button",
+                              {
+                                staticClass: "btn btn-primary",
+                                attrs: { type: "button", id: "myBtn" },
+                                on: {
+                                  click: function($event) {
+                                    return _vm.responderEnquete(enquete.id)
+                                  }
+                                }
+                              },
+                              [
+                                _vm._v(
+                                  "\n                    Responder\n                  "
+                                )
+                              ]
+                            )
+                          ])
+                        ])
+                      ])
+                    })
+                  ],
+                  2
+                ),
+                _vm._v(" "),
+                _c("pagination", { attrs: { data: _vm.enquetes } }, [
+                  _c(
+                    "span",
+                    { attrs: { slot: "prev-nav" }, slot: "prev-nav" },
+                    [_vm._v("< Voltar")]
+                  ),
                   _vm._v(" "),
-                  _vm._l(_vm.enquetes.data, function(enquete, index) {
-                    return _c("tbody", { key: enquete.id }, [
+                  _c(
+                    "span",
+                    { attrs: { slot: "next-nav" }, slot: "next-nav" },
+                    [_vm._v("Próxima >")]
+                  )
+                ])
+              ],
+              1
+            )
+          ])
+        ]
+      ),
+      _vm._v(" "),
+      _c(
+        "div",
+        {
+          directives: [
+            {
+              name: "show",
+              rawName: "v-show",
+              value: _vm.respondendo,
+              expression: "respondendo"
+            }
+          ],
+          staticClass: "col-md-12"
+        },
+        [
+          _c("div", { staticClass: "card" }, [
+            _c("div", { staticClass: "card-header" }, [
+              _vm._v("A editar a enquete")
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "card-body" }, [
+              _c("form", [
+                _c("div", { staticClass: "mb-3" }, [
+                  _c("h3", { staticClass: "form-label" }, [
+                    _vm._v(_vm._s(_vm.responder__nome_enquete))
+                  ])
+                ]),
+                _vm._v(" "),
+                _c(
+                  "table",
+                  { staticClass: "table" },
+                  _vm._l(_vm.respostas, function(resposta, index) {
+                    return _c("tbody", { key: resposta.id }, [
                       _c("tr", [
                         _c("th", { attrs: { scope: "row" } }, [
                           _vm._v(_vm._s(index + 1))
@@ -38667,61 +38772,76 @@ var render = function() {
                         _vm._v(" "),
                         _c("td", [
                           _vm._v(
-                            "\n                  " + _vm._s(enquete.nome) + " "
+                            "\n                    " +
+                              _vm._s(resposta.alternativa) +
+                              " "
                           ),
                           _c("br"),
-                          _vm._v("Aos " + _vm._s(enquete.created_at)),
-                          _c("br"),
-                          _vm._v(
-                            "\n                  Tentativas de usuarios:\n                  "
-                          ),
-                          _c(
-                            "span",
-                            { staticClass: "badge bg-primary rounded-pill" },
-                            [_vm._v(_vm._s(enquete.tentativas))]
-                          )
+                          _vm._v(" "),
+                          _c("span", { staticClass: "badge bg-primary" }, [
+                            _vm._v(
+                              "\n                      Aos\n                      " +
+                                _vm._s(resposta.created_at) +
+                                "\n                    "
+                            )
+                          ])
                         ]),
                         _vm._v(" "),
                         _c("td", [
-                          _c(
-                            "button",
-                            {
-                              staticClass: "btn btn-primary",
-                              attrs: { type: "button" },
-                              on: {
-                                click: function($event) {
-                                  _vm.criando = false
-                                }
-                              }
-                            },
-                            [
-                              _vm._v(
-                                "\n                    Responder Enquete\n                  "
+                          _c("div", { staticClass: "mb-3" }, [
+                            _c(
+                              "input",
+                              _vm._g(
+                                { attrs: { type: "radio" } },
+                                _vm.selecionarResposta(index + 1)
                               )
-                            ]
-                          )
+                            ),
+                            _vm._v(" "),
+                            _c("label", [_vm._v("Marcar ")])
+                          ])
                         ])
                       ])
                     ])
-                  })
-                ],
-                2
-              ),
-              _vm._v(" "),
-              _c("pagination", { attrs: { data: _vm.enquetes } }, [
-                _c("span", { attrs: { slot: "prev-nav" }, slot: "prev-nav" }, [
-                  _vm._v("< Voltar")
-                ]),
+                  }),
+                  0
+                ),
                 _vm._v(" "),
-                _c("span", { attrs: { slot: "next-nav" }, slot: "next-nav" }, [
-                  _vm._v("Próxima >")
-                ])
+                _c("hr"),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "text-center btn btn-primary",
+                    attrs: { type: "submit" },
+                    on: {
+                      click: function($event) {
+                        $event.preventDefault()
+                        return _vm.guardarEnquete.apply(null, arguments)
+                      }
+                    }
+                  },
+                  [_vm._v("\n              Enviar resposta\n            ")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "text-center btn btn-secondary",
+                    attrs: { type: "submit" },
+                    on: {
+                      click: function($event) {
+                        $event.preventDefault()
+                        return _vm.cancelarEdicao.apply(null, arguments)
+                      }
+                    }
+                  },
+                  [_vm._v("\n              Cancelar\n            ")]
+                )
               ])
-            ],
-            1
-          )
-        ])
-      ])
+            ])
+          ])
+        ]
+      )
     ])
   ])
 }
@@ -39021,104 +39141,124 @@ var render = function() {
         ]
       ),
       _vm._v(" "),
-      _c("div", { staticClass: "col-md-7" }, [
-        _c("div", { staticClass: "card" }, [
-          _c("div", { staticClass: "card-header" }, [
-            _vm._v("Minhas Enquetes")
-          ]),
-          _vm._v(" "),
-          _c(
-            "div",
-            { staticClass: "card-body" },
-            [
-              _c(
-                "table",
-                { staticClass: "table" },
-                [
-                  _vm._m(0),
-                  _vm._v(" "),
-                  _vm._l(_vm.enquetes.data, function(enquete, index) {
-                    return _c("tbody", { key: enquete.id }, [
-                      _c("tr", [
-                        _c("th", { attrs: { scope: "row" } }, [
-                          _vm._v(_vm._s(index + 1))
-                        ]),
-                        _vm._v(" "),
-                        _c("td", [
-                          _vm._v(
-                            "\n                  " + _vm._s(enquete.nome) + " "
-                          ),
-                          _c("br"),
-                          _vm._v("Aos " + _vm._s(enquete.created_at)),
-                          _c("br"),
-                          _vm._v(
-                            "\n                  Tentativas de usuarios:\n                  "
-                          ),
-                          _c(
-                            "span",
-                            { staticClass: "badge bg-primary rounded-pill" },
-                            [_vm._v(_vm._s(enquete.tentativas))]
-                          )
-                        ]),
-                        _vm._v(" "),
-                        _c("td", [
-                          _c(
-                            "button",
-                            {
-                              staticClass: "btn btn-primary",
-                              attrs: { type: "button", id: "myBtn" },
-                              on: {
-                                click: function($event) {
-                                  return _vm.editarEnquete(enquete.id)
-                                }
-                              }
-                            },
-                            [
-                              _vm._v(
-                                "\n                    Editar\n                  "
-                              )
-                            ]
-                          ),
+      _c(
+        "div",
+        {
+          directives: [
+            {
+              name: "show",
+              rawName: "v-show",
+              value: !_vm.editando,
+              expression: "!editando"
+            }
+          ],
+          staticClass: "col-md-7"
+        },
+        [
+          _c("div", { staticClass: "card" }, [
+            _c("div", { staticClass: "card-header" }, [
+              _vm._v("Minhas Enquetes")
+            ]),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "card-body" },
+              [
+                _c(
+                  "table",
+                  { staticClass: "table" },
+                  [
+                    _vm._m(0),
+                    _vm._v(" "),
+                    _vm._l(_vm.enquetes.data, function(enquete, index) {
+                      return _c("tbody", { key: enquete.id }, [
+                        _c("tr", [
+                          _c("th", { attrs: { scope: "row" } }, [
+                            _vm._v(_vm._s(index + 1))
+                          ]),
                           _vm._v(" "),
-                          _c(
-                            "button",
-                            {
-                              staticClass: "btn btn-primary",
-                              attrs: { type: "button", id: "show-modal" },
-                              on: {
-                                click: function($event) {
-                                  return _vm.apagarEnquete(_vm.enquete_id)
+                          _c("td", [
+                            _vm._v(
+                              "\n                  " +
+                                _vm._s(enquete.nome) +
+                                " "
+                            ),
+                            _c("br"),
+                            _vm._v("Aos " + _vm._s(enquete.created_at)),
+                            _c("br"),
+                            _vm._v(
+                              "\n                  Tentativas de usuarios:\n                  "
+                            ),
+                            _c(
+                              "span",
+                              { staticClass: "badge bg-primary rounded-pill" },
+                              [_vm._v(_vm._s(enquete.tentativas))]
+                            )
+                          ]),
+                          _vm._v(" "),
+                          _c("td", [
+                            _c(
+                              "button",
+                              {
+                                staticClass: "btn btn-primary",
+                                attrs: { type: "button", id: "myBtn" },
+                                on: {
+                                  click: function($event) {
+                                    return _vm.editarEnquete(enquete.id)
+                                  }
                                 }
-                              }
-                            },
-                            [
-                              _vm._v(
-                                "\n                    Apagar\n                  "
-                              )
-                            ]
-                          )
+                              },
+                              [
+                                _vm._v(
+                                  "\n                    Editar\n                  "
+                                )
+                              ]
+                            ),
+                            _vm._v(" "),
+                            _c(
+                              "button",
+                              {
+                                staticClass: "btn btn-primary",
+                                attrs: { type: "button", id: "show-modal" },
+                                on: {
+                                  click: function($event) {
+                                    return _vm.apagarEnquete(enquete.id)
+                                  }
+                                }
+                              },
+                              [
+                                _vm._v(
+                                  "\n                    Apagar\n                  "
+                                )
+                              ]
+                            )
+                          ])
                         ])
                       ])
-                    ])
-                  })
-                ],
-                2
-              ),
-              _vm._v(" "),
-              _c("pagination", { attrs: { data: _vm.enquetes } }, [
-                _c("span", { attrs: { slot: "prev-nav" }, slot: "prev-nav" }, [
-                  _vm._v("< Voltar")
-                ]),
+                    })
+                  ],
+                  2
+                ),
                 _vm._v(" "),
-                _c("span", { attrs: { slot: "next-nav" }, slot: "next-nav" }, [
-                  _vm._v("Próxima >")
+                _c("pagination", { attrs: { data: _vm.enquetes } }, [
+                  _c(
+                    "span",
+                    { attrs: { slot: "prev-nav" }, slot: "prev-nav" },
+                    [_vm._v("< Voltar")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "span",
+                    { attrs: { slot: "next-nav" }, slot: "next-nav" },
+                    [_vm._v("Próxima >")]
+                  )
                 ])
-              ])
-            ],
-            1
-          )
-        ])
-      ]),
+              ],
+              1
+            )
+          ])
+        ]
+      ),
       _vm._v(" "),
       _c(
         "div",
@@ -39131,7 +39271,7 @@ var render = function() {
               expression: "editando"
             }
           ],
-          staticClass: "col-md-5"
+          staticClass: "col-md-8"
         },
         [
           _c("div", { staticClass: "card" }, [
@@ -39173,6 +39313,8 @@ var render = function() {
                     }
                   })
                 ]),
+                _vm._v(" "),
+                _vm._m(1),
                 _vm._v(" "),
                 _c(
                   "table",
@@ -39226,42 +39368,56 @@ var render = function() {
                   0
                 ),
                 _vm._v(" "),
-                _c("div", { staticClass: "mb-3" }, [
-                  _c(
-                    "label",
-                    {
-                      staticClass: "form-label",
-                      attrs: { for: "alternativa_2" }
-                    },
-                    [_vm._v("Adicionar nova resposta")]
-                  ),
-                  _vm._v(" "),
-                  _c("input", {
+                _c(
+                  "div",
+                  {
                     directives: [
                       {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.nova_alternativa,
-                        expression: "nova_alternativa"
+                        name: "show",
+                        rawName: "v-show",
+                        value: _vm.mostrar_add_alternativa,
+                        expression: "mostrar_add_alternativa"
                       }
                     ],
-                    staticClass: "form-control",
-                    attrs: {
-                      type: "text",
-                      id: "nova_alternativa",
-                      required: ""
-                    },
-                    domProps: { value: _vm.nova_alternativa },
-                    on: {
-                      input: function($event) {
-                        if ($event.target.composing) {
-                          return
+                    staticClass: "mb-3"
+                  },
+                  [
+                    _c(
+                      "label",
+                      {
+                        staticClass: "form-label",
+                        attrs: { for: "alternativa_2" }
+                      },
+                      [_vm._v("Adicionar nova resposta")]
+                    ),
+                    _vm._v(" "),
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.nova_alternativa,
+                          expression: "nova_alternativa"
                         }
-                        _vm.nova_alternativa = $event.target.value
+                      ],
+                      staticClass: "form-control",
+                      attrs: {
+                        type: "text",
+                        id: "nova_alternativa",
+                        required: ""
+                      },
+                      domProps: { value: _vm.nova_alternativa },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.nova_alternativa = $event.target.value
+                        }
                       }
-                    }
-                  })
-                ]),
+                    })
+                  ]
+                ),
                 _vm._v(" "),
                 _c("div", { staticClass: "mb-3" }, [
                   _c("input", {
@@ -39273,11 +39429,11 @@ var render = function() {
                         expression: "editar__resposta"
                       }
                     ],
-                    attrs: { type: "radio", id: "one" },
-                    domProps: { checked: _vm._q(_vm.editar__resposta, null) },
+                    attrs: { type: "radio", id: "one", value: "true" },
+                    domProps: { checked: _vm._q(_vm.editar__resposta, "true") },
                     on: {
                       change: function($event) {
-                        _vm.editar__resposta = null
+                        _vm.editar__resposta = "true"
                       }
                     }
                   }),
@@ -39312,13 +39468,32 @@ var render = function() {
                     on: {
                       click: function($event) {
                         $event.preventDefault()
-                        return _vm.criarEnquete.apply(null, arguments)
+                        return _vm.guardarEnquete.apply(null, arguments)
                       }
                     }
                   },
                   [
                     _vm._v(
                       "\n              Salvar edição da enquete\n            "
+                    )
+                  ]
+                ),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "text-center btn btn-secondary",
+                    attrs: { type: "submit" },
+                    on: {
+                      click: function($event) {
+                        $event.preventDefault()
+                        return _vm.cancelarEdicao.apply(null, arguments)
+                      }
+                    }
+                  },
+                  [
+                    _vm._v(
+                      "\n              Cancelar edição e voltar\n            "
                     )
                   ]
                 )
@@ -39342,6 +39517,24 @@ var staticRenderFns = [
         _c("th", { attrs: { scope: "col" } }, [_vm._v("Nome da Enqueta")]),
         _vm._v(" "),
         _c("th", { attrs: { scope: "col" } }, [_vm._v("Acções")])
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "mb-3" }, [
+      _c("span", [
+        _vm._v(
+          "Não é possível apagar todas as respostas, devem sobrar duas.\n                "
+        ),
+        _c("br"),
+        _vm._v(" "),
+        _c("hr"),
+        _vm._v(
+          "\n                Se a tua resposta estiver entre as apagadas, a resposta padrão\n                é a primeira alternativa."
+        )
       ])
     ])
   }
@@ -51538,42 +51731,7 @@ Vue.compile = compileToFunctions;
 /******/ 		return module.exports;
 /******/ 	}
 /******/ 	
-/******/ 	// expose the modules object (__webpack_modules__)
-/******/ 	__webpack_require__.m = __webpack_modules__;
-/******/ 	
 /************************************************************************/
-/******/ 	/* webpack/runtime/chunk loaded */
-/******/ 	(() => {
-/******/ 		var deferred = [];
-/******/ 		__webpack_require__.O = (result, chunkIds, fn, priority) => {
-/******/ 			if(chunkIds) {
-/******/ 				priority = priority || 0;
-/******/ 				for(var i = deferred.length; i > 0 && deferred[i - 1][2] > priority; i--) deferred[i] = deferred[i - 1];
-/******/ 				deferred[i] = [chunkIds, fn, priority];
-/******/ 				return;
-/******/ 			}
-/******/ 			var notFulfilled = Infinity;
-/******/ 			for (var i = 0; i < deferred.length; i++) {
-/******/ 				var [chunkIds, fn, priority] = deferred[i];
-/******/ 				var fulfilled = true;
-/******/ 				for (var j = 0; j < chunkIds.length; j++) {
-/******/ 					if ((priority & 1 === 0 || notFulfilled >= priority) && Object.keys(__webpack_require__.O).every((key) => (__webpack_require__.O[key](chunkIds[j])))) {
-/******/ 						chunkIds.splice(j--, 1);
-/******/ 					} else {
-/******/ 						fulfilled = false;
-/******/ 						if(priority < notFulfilled) notFulfilled = priority;
-/******/ 					}
-/******/ 				}
-/******/ 				if(fulfilled) {
-/******/ 					deferred.splice(i--, 1)
-/******/ 					var r = fn();
-/******/ 					if (r !== undefined) result = r;
-/******/ 				}
-/******/ 			}
-/******/ 			return result;
-/******/ 		};
-/******/ 	})();
-/******/ 	
 /******/ 	/* webpack/runtime/compat get default export */
 /******/ 	(() => {
 /******/ 		// getDefaultExport function for compatibility with non-harmony modules
@@ -51635,67 +51793,55 @@ Vue.compile = compileToFunctions;
 /******/ 		};
 /******/ 	})();
 /******/ 	
-/******/ 	/* webpack/runtime/jsonp chunk loading */
-/******/ 	(() => {
-/******/ 		// no baseURI
-/******/ 		
-/******/ 		// object to store loaded and loading chunks
-/******/ 		// undefined = chunk not loaded, null = chunk preloaded/prefetched
-/******/ 		// [resolve, reject, Promise] = chunk loading, 0 = chunk loaded
-/******/ 		var installedChunks = {
-/******/ 			"/js/app": 0,
-/******/ 			"css\\vue-styles": 0
-/******/ 		};
-/******/ 		
-/******/ 		// no chunk on demand loading
-/******/ 		
-/******/ 		// no prefetching
-/******/ 		
-/******/ 		// no preloaded
-/******/ 		
-/******/ 		// no HMR
-/******/ 		
-/******/ 		// no HMR manifest
-/******/ 		
-/******/ 		__webpack_require__.O.j = (chunkId) => (installedChunks[chunkId] === 0);
-/******/ 		
-/******/ 		// install a JSONP callback for chunk loading
-/******/ 		var webpackJsonpCallback = (parentChunkLoadingFunction, data) => {
-/******/ 			var [chunkIds, moreModules, runtime] = data;
-/******/ 			// add "moreModules" to the modules object,
-/******/ 			// then flag all "chunkIds" as loaded and fire callback
-/******/ 			var moduleId, chunkId, i = 0;
-/******/ 			if(chunkIds.some((id) => (installedChunks[id] !== 0))) {
-/******/ 				for(moduleId in moreModules) {
-/******/ 					if(__webpack_require__.o(moreModules, moduleId)) {
-/******/ 						__webpack_require__.m[moduleId] = moreModules[moduleId];
-/******/ 					}
-/******/ 				}
-/******/ 				if(runtime) var result = runtime(__webpack_require__);
-/******/ 			}
-/******/ 			if(parentChunkLoadingFunction) parentChunkLoadingFunction(data);
-/******/ 			for(;i < chunkIds.length; i++) {
-/******/ 				chunkId = chunkIds[i];
-/******/ 				if(__webpack_require__.o(installedChunks, chunkId) && installedChunks[chunkId]) {
-/******/ 					installedChunks[chunkId][0]();
-/******/ 				}
-/******/ 				installedChunks[chunkIds[i]] = 0;
-/******/ 			}
-/******/ 			return __webpack_require__.O(result);
-/******/ 		}
-/******/ 		
-/******/ 		var chunkLoadingGlobal = self["webpackChunk"] = self["webpackChunk"] || [];
-/******/ 		chunkLoadingGlobal.forEach(webpackJsonpCallback.bind(null, 0));
-/******/ 		chunkLoadingGlobal.push = webpackJsonpCallback.bind(null, chunkLoadingGlobal.push.bind(chunkLoadingGlobal));
-/******/ 	})();
-/******/ 	
 /************************************************************************/
-/******/ 	
-/******/ 	// startup
-/******/ 	// Load entry module and return exports
-/******/ 	// This entry module depends on other loaded chunks and execution need to be delayed
-/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["css\\vue-styles"], () => (__webpack_require__("./resources/js/app.js")))
-/******/ 	__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
-/******/ 	
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+(() => {
+"use strict";
+/*!*****************************!*\
+  !*** ./resources/js/app.js ***!
+  \*****************************/
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm.js");
+/* harmony import */ var _components_Enquetes_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./components/Enquetes.vue */ "./resources/js/components/Enquetes.vue");
+/* harmony import */ var _components_UserHome_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/UserHome.vue */ "./resources/js/components/UserHome.vue");
+/* harmony import */ var laravel_vue_pagination__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! laravel-vue-pagination */ "./node_modules/laravel-vue-pagination/dist/laravel-vue-pagination.common.js");
+/* harmony import */ var laravel_vue_pagination__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(laravel_vue_pagination__WEBPACK_IMPORTED_MODULE_2__);
+/**
+ * First we will load all of this project's JavaScript dependencies which
+ * includes Vue and other libraries. It is a great starting point when
+ * building robust, powerful web applications using Vue and Laravel.
+ */
+__webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
+
+
+
+
+
+/**
+ * The following block of code may be used to automatically register your
+ * Vue components. It will recursively scan this directory for the Vue
+ * components and automatically register them with their "basename".
+ *
+ * Eg. ./components/ExampleComponent.vue -> <example-component></example-component>
+ */
+// const files = require.context('./', true, /\.vue$/i);
+// files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default));
+
+vue__WEBPACK_IMPORTED_MODULE_3__["default"].component('example-component', __webpack_require__(/*! ./components/ExampleComponent.vue */ "./resources/js/components/ExampleComponent.vue"));
+vue__WEBPACK_IMPORTED_MODULE_3__["default"].component('enquetes', _components_Enquetes_vue__WEBPACK_IMPORTED_MODULE_0__["default"]);
+vue__WEBPACK_IMPORTED_MODULE_3__["default"].component('user-home', _components_UserHome_vue__WEBPACK_IMPORTED_MODULE_1__["default"]);
+vue__WEBPACK_IMPORTED_MODULE_3__["default"].component('pagination', (laravel_vue_pagination__WEBPACK_IMPORTED_MODULE_2___default()));
+/**
+ * Next, we will create a fresh Vue application instance and attach it to
+ * the page. Then, you may begin adding components to this application
+ * or customize the JavaScript scaffolding to fit your unique needs.
+ */
+
+var app = new vue__WEBPACK_IMPORTED_MODULE_3__["default"]({
+  el: '#app'
+});
+})();
+
 /******/ })()
 ;
