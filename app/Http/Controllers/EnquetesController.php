@@ -33,6 +33,7 @@ class EnquetesController extends Controller
 
     public function listar_enquetes()
     {
+        //$enquetes = Enquete::select('nome, created_at')->paginate();
         $enquetes = Enquete::paginate();;
         return response()->json($enquetes);
     }
@@ -57,6 +58,28 @@ class EnquetesController extends Controller
         $enquete->nome = $nome;
         $enquete->save();
         return 'Ok';
+    }
+
+    public function respondendo_enquete()
+    {
+        $enquete_id = request()->enquete_id; 
+        $opcao       = request()->opcao_respondida;
+        $enquete = Enquete::find($enquete_id);
+        $resposta_certa = $enquete->resposta;
+
+        $enquete->tentativas = $enquete->tentativas +1;
+        if($resposta_certa == $opcao){
+            $enquete->acertos = $enquete->acertos +1;
+            $enquete->save();
+            return response()->json(array(
+                'resposta_certa'
+            ));
+        }
+        $enquete->erros = $enquete->erros +1;
+        $enquete->save();
+        return response()->json(array(
+            'resposta_errada'
+        ));
     }
 
     public function apagar_enquete($enquete_id)

@@ -1910,14 +1910,50 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
+      mostrar_mensagem: false,
+      mostrar_mensagem_parabens: false,
+      mostrar_mensagem_infelici: false,
       respondendo: false,
       nome_enquete: "",
       alternativa_1: "",
       alternativa_2: "",
       resposta: "",
+      resposta_usuario: "",
       responder__resposta: "false",
       responder__enquete_id: "",
       responder__nome_enquete: "",
@@ -1932,39 +1968,68 @@ __webpack_require__.r(__webpack_exports__);
     this.getResults();
   },
   methods: {
-    //Selecionando uma resposta
-    selecionarResposta: function selecionarResposta(opcao_numero) {
-      this.resposta = opcao_numero;
+    //Enviando a resposta uma resposta
+    enviarResposta: function enviarResposta() {
+      var _this = this;
+
+      axios.post("respondendo_enquete", {
+        enquete_id: this.responder__enquete_id,
+        opcao_respondida: this.resposta_usuario
+      }).then(function (response) {
+        var resultado = response.data;
+        _this.resposta_usuario = "";
+
+        if (resultado == "resposta_certa") {
+          _this.mostrar_mensagem = true;
+          _this.mostrar_mensagem_parabens = true;
+        } else {
+          _this.mostrar_mensagem = true;
+          _this.mostrar_mensagem_infelici = true;
+        }
+      });
+    },
+    //Terminando uma Enquete
+    cancelar: function cancelar() {
+      this.mostrar_mensagem = false;
+      this.mostrar_mensagem_parabens = false;
+      this.mostrar_mensagem_infelici = false;
+      this.respondendo = false;
+      this.resposta_usuario = "";
+      this.responder__resposta = "false";
+      this.responder__enquete_id = "";
+      this.responder__nome_enquete = "";
+      this.responder__num_respostas = 0;
+      this.getResults();
     },
     // Our method to GET results from a Laravel endpoint
     getResults: function getResults() {
-      var _this = this;
+      var _this2 = this;
 
       var page = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
       axios.get("listar_enquetes?page=" + page).then(function (response) {
         console.log(response.data);
-        _this.enquetes = response.data;
+        _this2.enquetes = response.data;
       });
     },
     //Obter as respostas da enquete
     getRespostas: function getRespostas(enquete_id) {
-      var _this2 = this;
+      var _this3 = this;
 
       axios.get("respostas_enquete/" + enquete_id).then(function (response) {
-        _this2.respostas = response.data;
+        _this3.respostas = response.data;
       });
     },
     //A responder a uma enquete
     responderEnquete: function responderEnquete(enquete_id) {
-      var _this3 = this;
+      var _this4 = this;
 
       this.respondendo = true;
       this.getRespostas(enquete_id);
       axios.get("editar_enquete/" + enquete_id).then(function (response) {
         console.log(response.data.enquete);
-        _this3.responder__nome_enquete = response.data.nome;
-        _this3.responder__num_respostas = response.data.num_respostas;
-        _this3.responder__enquete_id = enquete_id;
+        _this4.responder__nome_enquete = response.data.nome;
+        _this4.responder__num_respostas = response.data.num_respostas;
+        _this4.responder__enquete_id = enquete_id;
       });
     }
   }
@@ -38678,12 +38743,32 @@ var render = function() {
                             _vm._v("Aos " + _vm._s(enquete.created_at)),
                             _c("br"),
                             _vm._v(
-                              "\n                  Score:\n                  "
+                              "\n                  Tentativas:\n                  "
                             ),
                             _c(
                               "span",
                               { staticClass: "badge bg-primary rounded-pill" },
                               [_vm._v(_vm._s(enquete.tentativas))]
+                            ),
+                            _vm._v(" "),
+                            _c("br"),
+                            _vm._v(
+                              "\n                  Erros:\n                  "
+                            ),
+                            _c(
+                              "span",
+                              { staticClass: "badge bg-primary rounded-pill" },
+                              [_vm._v(_vm._s(enquete.erros))]
+                            ),
+                            _vm._v(" "),
+                            _c("br"),
+                            _vm._v(
+                              "\n                  Acertos:\n                  "
+                            ),
+                            _c(
+                              "span",
+                              { staticClass: "badge bg-primary rounded-pill" },
+                              [_vm._v(_vm._s(enquete.acertos))]
                             )
                           ]),
                           _vm._v(" "),
@@ -38749,78 +38834,175 @@ var render = function() {
         [
           _c("div", { staticClass: "card" }, [
             _c("div", { staticClass: "card-header" }, [
-              _vm._v("A editar a enquete")
+              _vm._v("Respondendo a uma enquete")
             ]),
             _vm._v(" "),
-            _c("div", { staticClass: "card-body" }, [
-              _c("form", [
-                _c("div", { staticClass: "mb-3" }, [
-                  _c("h3", { staticClass: "form-label" }, [
-                    _vm._v(_vm._s(_vm.responder__nome_enquete))
-                  ])
-                ]),
-                _vm._v(" "),
-                _c(
-                  "table",
-                  { staticClass: "table" },
-                  _vm._l(_vm.respostas, function(resposta, index) {
-                    return _c("tbody", { key: resposta.id }, [
-                      _c("tr", [
-                        _c("th", { attrs: { scope: "row" } }, [
-                          _vm._v(_vm._s(index + 1))
-                        ]),
-                        _vm._v(" "),
-                        _c("td", [
-                          _vm._v(
-                            "\n                    " +
-                              _vm._s(resposta.alternativa) +
-                              " "
-                          ),
-                          _c("br"),
+            _c(
+              "div",
+              {
+                directives: [
+                  {
+                    name: "show",
+                    rawName: "v-show",
+                    value: !_vm.mostrar_mensagem,
+                    expression: "!mostrar_mensagem"
+                  }
+                ],
+                staticClass: "card-body"
+              },
+              [
+                _c("form", [
+                  _c("div", { staticClass: "mb-3" }, [
+                    _c("h3", { staticClass: "form-label" }, [
+                      _vm._v(_vm._s(_vm.responder__nome_enquete))
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c(
+                    "table",
+                    { staticClass: "table" },
+                    _vm._l(_vm.respostas, function(resposta, index) {
+                      return _c("tbody", { key: resposta.id }, [
+                        _c("tr", [
+                          _c("th", { attrs: { scope: "row" } }, [
+                            _vm._v(_vm._s(index + 1))
+                          ]),
                           _vm._v(" "),
-                          _c("span", { staticClass: "badge bg-primary" }, [
+                          _c("td", [
                             _vm._v(
-                              "\n                      Aos\n                      " +
-                                _vm._s(resposta.created_at) +
-                                "\n                    "
-                            )
-                          ])
-                        ]),
-                        _vm._v(" "),
-                        _c("td", [
-                          _c("div", { staticClass: "mb-3" }, [
-                            _c(
-                              "input",
-                              _vm._g(
-                                { attrs: { type: "radio" } },
-                                _vm.selecionarResposta(index + 1)
-                              )
+                              "\n                    " +
+                                _vm._s(resposta.alternativa) +
+                                " "
                             ),
+                            _c("br"),
                             _vm._v(" "),
-                            _c("label", [_vm._v("Marcar ")])
+                            _c("span", { staticClass: "badge bg-primary" }, [
+                              _vm._v(
+                                "\n                      Aos\n                      " +
+                                  _vm._s(resposta.created_at) +
+                                  "\n                    "
+                              )
+                            ])
+                          ]),
+                          _vm._v(" "),
+                          _c("td", [
+                            _c("div", { staticClass: "mb-3" }, [
+                              _c("input", {
+                                directives: [
+                                  {
+                                    name: "model",
+                                    rawName: "v-model",
+                                    value: _vm.resposta_usuario,
+                                    expression: "resposta_usuario"
+                                  }
+                                ],
+                                attrs: { type: "radio" },
+                                domProps: {
+                                  value: index + 1,
+                                  checked: _vm._q(
+                                    _vm.resposta_usuario,
+                                    index + 1
+                                  )
+                                },
+                                on: {
+                                  change: function($event) {
+                                    _vm.resposta_usuario = index + 1
+                                  }
+                                }
+                              }),
+                              _vm._v(" "),
+                              _c("label", [_vm._v("Marcar ")])
+                            ])
                           ])
                         ])
                       ])
+                    }),
+                    0
+                  ),
+                  _vm._v(" "),
+                  _c("hr"),
+                  _vm._v(" "),
+                  _c(
+                    "button",
+                    {
+                      staticClass: "text-center btn btn-primary",
+                      attrs: { type: "submit" },
+                      on: {
+                        click: function($event) {
+                          $event.preventDefault()
+                          return _vm.enviarResposta.apply(null, arguments)
+                        }
+                      }
+                    },
+                    [_vm._v("\n              Enviar resposta\n            ")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "button",
+                    {
+                      staticClass: "text-center btn btn-secondary",
+                      attrs: { type: "submit" },
+                      on: {
+                        click: function($event) {
+                          $event.preventDefault()
+                          return _vm.cancelar.apply(null, arguments)
+                        }
+                      }
+                    },
+                    [_vm._v("\n              Cancelar\n            ")]
+                  )
+                ])
+              ]
+            ),
+            _vm._v(" "),
+            _c(
+              "div",
+              {
+                directives: [
+                  {
+                    name: "show",
+                    rawName: "v-show",
+                    value: _vm.mostrar_mensagem,
+                    expression: "mostrar_mensagem"
+                  }
+                ],
+                staticClass: "card-body"
+              },
+              [
+                _c(
+                  "div",
+                  {
+                    directives: [
+                      {
+                        name: "show",
+                        rawName: "v-show",
+                        value: _vm.mostrar_mensagem_parabens,
+                        expression: "mostrar_mensagem_parabens"
+                      }
+                    ]
+                  },
+                  [
+                    _c("h1", [
+                      _vm._v(
+                        "Parabéns você respondeu correctamente a enquete!!!"
+                      )
                     ])
-                  }),
-                  0
+                  ]
                 ),
                 _vm._v(" "),
-                _c("hr"),
-                _vm._v(" "),
                 _c(
-                  "button",
+                  "div",
                   {
-                    staticClass: "text-center btn btn-primary",
-                    attrs: { type: "submit" },
-                    on: {
-                      click: function($event) {
-                        $event.preventDefault()
-                        return _vm.guardarEnquete.apply(null, arguments)
+                    directives: [
+                      {
+                        name: "show",
+                        rawName: "v-show",
+                        value: _vm.mostrar_mensagem_infelici,
+                        expression: "mostrar_mensagem_infelici"
                       }
-                    }
+                    ]
                   },
-                  [_vm._v("\n              Enviar resposta\n            ")]
+                  [_vm._m(1)]
                 ),
                 _vm._v(" "),
                 _c(
@@ -38831,14 +39013,14 @@ var render = function() {
                     on: {
                       click: function($event) {
                         $event.preventDefault()
-                        return _vm.cancelarEdicao.apply(null, arguments)
+                        return _vm.cancelar.apply(null, arguments)
                       }
                     }
                   },
-                  [_vm._v("\n              Cancelar\n            ")]
+                  [_vm._v("\n            Terminar\n          ")]
                 )
-              ])
-            ])
+              ]
+            )
           ])
         ]
       )
@@ -38858,6 +39040,18 @@ var staticRenderFns = [
         _vm._v(" "),
         _c("th", { attrs: { scope: "col" } }, [_vm._v("Acções")])
       ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("h1", [
+      _vm._v(
+        "\n              Lamento, você não respondeu correctamente a enquete."
+      ),
+      _c("br"),
+      _vm._v("\n              Mais sorte da próxima.\n            ")
     ])
   }
 ]

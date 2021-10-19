@@ -23,9 +23,19 @@
                   <th scope="row">{{ index + 1 }}</th>
                   <td>
                     {{ enquete.nome }} <br />Aos {{ enquete.created_at }}<br />
-                    Score:
+                    Tentativas:
                     <span class="badge bg-primary rounded-pill">{{
                       enquete.tentativas
+                    }}</span>
+                    <br>
+                    Erros:
+                    <span class="badge bg-primary rounded-pill">{{
+                      enquete.erros
+                    }}</span>
+                    <br>
+                    Acertos:
+                    <span class="badge bg-primary rounded-pill">{{
+                      enquete.acertos
                     }}</span>
                   </td>
 
@@ -54,8 +64,8 @@
 
       <div class="col-md-12" v-show="respondendo">
         <div class="card">
-          <div class="card-header">A editar a enquete</div>
-          <div class="card-body">
+          <div class="card-header">Respondendo a uma enquete</div>
+          <div class="card-body" v-show="!mostrar_mensagem">
             <form>
               <div class="mb-3">
                 <h3 class="form-label">{{ responder__nome_enquete }}</h3>
@@ -77,8 +87,12 @@
                     </td>
                     <td>
                       <div class="mb-3">
-                        <input type="radio" v-on="selecionarResposta(index+1)" />
-                        <label >Marcar </label>
+                        <input
+                          type="radio"
+                          v-model="resposta_usuario"
+                          :value="index + 1"
+                        />
+                        <label>Marcar </label>
                       </div>
                     </td>
                   </tr>
@@ -88,20 +102,38 @@
               <hr />
 
               <button
-                @click.prevent="guardarEnquete"
+                @click.prevent="enviarResposta"
                 type="submit"
                 class="text-center btn btn-primary"
               >
                 Enviar resposta
               </button>
               <button
-                @click.prevent="cancelarEdicao"
+                @click.prevent="cancelar"
                 type="submit"
                 class="text-center btn btn-secondary"
               >
                 Cancelar
               </button>
             </form>
+          </div>
+          <div class="card-body" v-show="mostrar_mensagem">
+            <div v-show="mostrar_mensagem_parabens">
+              <h1>Parabéns você respondeu correctamente a enquete!!!</h1>
+            </div>
+            <div v-show="mostrar_mensagem_infelici">
+              <h1>
+                Lamento, você não respondeu correctamente a enquete.<br />
+                Mais sorte da próxima.
+              </h1>
+            </div>
+            <button
+              @click.prevent="cancelar"
+              type="submit"
+              class="text-center btn btn-secondary"
+            >
+              Terminar
+            </button>
           </div>
         </div>
       </div>
@@ -113,11 +145,15 @@
 export default {
   data() {
     return {
+      mostrar_mensagem: false,
+      mostrar_mensagem_parabens: false,
+      mostrar_mensagem_infelici: false,
       respondendo: false,
       nome_enquete: "",
       alternativa_1: "",
       alternativa_2: "",
       resposta: "",
+      resposta_usuario: "",
       responder__resposta: "false",
       responder__enquete_id: "",
       responder__nome_enquete: "",
@@ -132,10 +168,39 @@ export default {
     this.getResults();
   },
   methods: {
+    //Enviando a resposta uma resposta
+    enviarResposta() {
+      axios
+        .post("respondendo_enquete", {
+          enquete_id: this.responder__enquete_id,
+          opcao_respondida: this.resposta_usuario,
+        })
+        .then((response) => {
+          let resultado = response.data;
+          this.resposta_usuario = "";
 
-    //Selecionando uma resposta
-    selecionarResposta(opcao_numero){
-      this.resposta = opcao_numero;
+          if (resultado == "resposta_certa") {
+            this.mostrar_mensagem = true;
+            this.mostrar_mensagem_parabens = true;
+          } else {
+            this.mostrar_mensagem = true;
+            this.mostrar_mensagem_infelici = true;
+          }
+        });
+    },
+
+    //Terminando uma Enquete
+    cancelar() {
+      this.mostrar_mensagem = false;
+      this.mostrar_mensagem_parabens = false;
+      this.mostrar_mensagem_infelici = false;
+      this.respondendo = false;
+      this.resposta_usuario = "";
+      this.responder__resposta = "false";
+      this.responder__enquete_id = "";
+      this.responder__nome_enquete = "";
+      this.responder__num_respostas = 0;
+      this.getResults();
     },
     // Our method to GET results from a Laravel endpoint
     getResults(page = 1) {
@@ -145,7 +210,7 @@ export default {
       });
     },
 
-        //Obter as respostas da enquete
+    //Obter as respostas da enquete
     getRespostas(enquete_id) {
       axios.get("respostas_enquete/" + enquete_id).then((response) => {
         this.respostas = response.data;

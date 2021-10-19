@@ -22,6 +22,7 @@ Route::post('nova_enquete', 'EnquetesController@nova_enquete');
 Route::post('nova_alternativa', 'RespostasController@nova_alternativa');
 Route::post('editar_enquete', 'EnquetesController@editar_enquete');
 Route::post('guardar_enquete', 'EnquetesController@guardar_enquete');
+Route::post('respondendo_enquete', 'EnquetesController@respondendo_enquete');
 
 
 //Requisições GET
