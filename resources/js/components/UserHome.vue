@@ -186,34 +186,64 @@
                   required
                 />
               </div>
-              <div class="mb-3" v-for="(resposta, index) in respostas.data"
-                :key="resposta.id"
-              >
-                <label for="alternativa_1" class="form-label"
-                  >{{index+1}}ª Alternativa</label
+              <table class="table">
+                <tbody
+                  v-for="(resposta, index) in respostas"
+                  :key="resposta.id"
+                >
+                  <tr>
+                    <th scope="row">{{ index + 1 }}</th>
+                    <td>
+                      {{ resposta.alternativa }} <br />
+                      <span class="badge bg-primary">
+                        Aos
+                        {{ resposta.created_at }}
+                      </span>
+                    </td>
+                    <td>
+                      <button
+                        type="button"
+                        class="btn btn-primary"
+                        @click="apagarResposta(resposta.id)"
+                      >
+                        Apagar
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="mb-3">
+                <label for="alternativa_2" class="form-label"
+                  >Adicionar nova resposta</label
                 >
                 <input
                   type="text"
                   class="form-control"
-                  value="{respostas}}"
+                  id="nova_alternativa"
+                  v-model="nova_alternativa"
+                  required
                 />
-                 <label for="" class="form-label"
-                  >Marcar a alternativa como a resposta</label>
-                <input
-                  type="radio"
-                  id="one"
-                  value="1"
-                  v-model="editar__resposta"
-                />
-                <br/>
               </div>
+              <div class="mb-3">
+                <input type="radio" id="one" v-model="editar__resposta" />
+                <label for="one">Marcar a alternativa como a resposta </label>
+              </div>
+              <button
+                @click.prevent="adicionarAlternativa"
+                type="submit"
+                class="btn btn-primary"
+              >
+                Salvar alternativa
+              </button>
+
+              <hr />
 
               <button
                 @click.prevent="criarEnquete"
                 type="submit"
-                class="btn btn-primary"
+                class="text-center btn btn-primary"
               >
-                Criar Enquete
+                Salvar edição da enquete
               </button>
             </form>
           </div>
@@ -232,11 +262,13 @@ export default {
       alternativa_1: "",
       alternativa_2: "",
       resposta: "",
+      editar__enquete_id: "",
       editar__nome_enquete: "",
       editar__alternativa_1: "",
       editar__alternativa_2: "",
       editar__resposta: "",
       editar__num_respostas: 0,
+      nova_alternativa: "",
       enquetes: {},
       respostas: {},
     };
@@ -247,16 +279,27 @@ export default {
     this.getResults();
   },
   methods: {
+    //Obter as respostas da enquete
+    getRespostas(enquete_id) {
+      axios.get("respostas_enquete/" + enquete_id).then((response) => {
+        this.respostas = response.data;
+      });
+    },
     //Editando
     editarEnquete(enquete_id) {
       this.editando = true;
+      this.editar__enquete_id = enquete_id;
+      this.getRespostas(enquete_id);
       axios.get("editar_enquete/" + enquete_id).then((response) => {
         console.log(response.data.enquete);
         this.editar__nome_enquete = response.data.nome;
         this.editar__num_respostas = response.data.num_respostas;
-        axios.get("respostas_enquete/" + enquete_id).then((response) => {
-          this.respostas = response.data[0];
-        });
+      });
+    },
+    //Apagar Resposta
+    apagarResposta(resposta_id, enquete_id) {
+      axios.get("apagar_resposta/" + resposta_id).then((response) => {
+          this.getRespostas(enquete_id);
       });
     },
     // Our method to GET results from a Laravel endpoint
@@ -267,6 +310,19 @@ export default {
         // Fetch initial results
         this.getResults();
       });
+    },
+    adicionarAlternativa() {
+      console.log(this.editar__resposta);
+      axios
+        .post("nova_alternativa", {
+          enquete_id: this.editar__enquete_id,
+          num_respostas: this.editar__num_respostas,
+          opcao_certa: this.editar__resposta,
+          nova_alternativa: this.nova_alternativa,
+        })
+        .then((response) => {
+          this.nova_alternativa;
+        });
     },
     criarEnquete() {
       axios

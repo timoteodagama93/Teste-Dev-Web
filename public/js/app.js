@@ -2182,6 +2182,36 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
@@ -2190,11 +2220,13 @@ __webpack_require__.r(__webpack_exports__);
       alternativa_1: "",
       alternativa_2: "",
       resposta: "",
+      editar__enquete_id: "",
       editar__nome_enquete: "",
       editar__alternativa_1: "",
       editar__alternativa_2: "",
       editar__resposta: "",
       editar__num_respostas: 0,
+      nova_alternativa: "",
       enquetes: {},
       respostas: {}
     };
@@ -2205,34 +2237,62 @@ __webpack_require__.r(__webpack_exports__);
     this.getResults();
   },
   methods: {
-    //Editando
-    editarEnquete: function editarEnquete(enquete_id) {
+    //Obter as respostas da enquete
+    getRespostas: function getRespostas(enquete_id) {
       var _this = this;
 
+      axios.get("respostas_enquete/" + enquete_id).then(function (response) {
+        _this.respostas = response.data;
+      });
+    },
+    //Editando
+    editarEnquete: function editarEnquete(enquete_id) {
+      var _this2 = this;
+
       this.editando = true;
+      this.editar__enquete_id = enquete_id;
+      this.getRespostas(enquete_id);
       axios.get("editar_enquete/" + enquete_id).then(function (response) {
         console.log(response.data.enquete);
-        _this.editar__nome_enquete = response.data.nome;
-        _this.editar__num_respostas = response.data.num_respostas;
-        axios.get("respostas_enquete/" + enquete_id).then(function (response) {
-          _this.respostas = response.data[0];
-        });
+        _this2.editar__nome_enquete = response.data.nome;
+        _this2.editar__num_respostas = response.data.num_respostas;
+      });
+    },
+    //Apagar Resposta
+    apagarResposta: function apagarResposta(resposta_id, enquete_id) {
+      var _this3 = this;
+
+      axios.get("apagar_resposta/" + resposta_id).then(function (response) {
+        _this3.getRespostas(enquete_id);
       });
     },
     // Our method to GET results from a Laravel endpoint
     getResults: function getResults() {
-      var _this2 = this;
+      var _this4 = this;
 
       var page = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
       axios.get("user_enquetes?page=" + page).then(function (response) {
         console.log(response.data);
-        _this2.enquetes = response.data; // Fetch initial results
+        _this4.enquetes = response.data; // Fetch initial results
 
-        _this2.getResults();
+        _this4.getResults();
+      });
+    },
+    adicionarAlternativa: function adicionarAlternativa() {
+      var _this5 = this;
+
+      console.log(this.editar__resposta);
+      axios.post("nova_alternativa", {
+        enquete_id: this.editar__enquete_id,
+        num_respostas: this.editar__num_respostas,
+        opcao_certa: this.editar__resposta,
+        nova_alternativa: this.nova_alternativa
+      }).then(function (response) {
+        _this5.nova_alternativa;
       });
     },
     criarEnquete: function criarEnquete() {
-      var _this3 = this;
+      var _this6 = this;
 
       axios.post("nova_enquete", {
         nome_enquete: this.nome_enquete,
@@ -2241,12 +2301,12 @@ __webpack_require__.r(__webpack_exports__);
         resposta: this.resposta
       }).then(function (response) {
         console.log(response);
-        _this3.nome_enquete = "";
-        _this3.alternativa_1 = "";
-        _this3.alternativa_2 = "";
-        _this3.resposta = "";
+        _this6.nome_enquete = "";
+        _this6.alternativa_1 = "";
+        _this6.alternativa_2 = "";
+        _this6.resposta = "";
 
-        _this3.getResults();
+        _this6.getResults();
       });
     }
   }
@@ -39070,109 +39130,189 @@ var render = function() {
             ]),
             _vm._v(" "),
             _c("div", { staticClass: "card-body" }, [
-              _c(
-                "form",
-                [
-                  _c("div", { staticClass: "mb-3" }, [
-                    _c(
-                      "label",
-                      {
-                        staticClass: "form-label",
-                        attrs: { for: "nome_enquete" }
-                      },
-                      [_vm._v("Nome da enquete")]
-                    ),
-                    _vm._v(" "),
-                    _c("input", {
-                      directives: [
-                        {
-                          name: "model",
-                          rawName: "v-model",
-                          value: _vm.editar__nome_enquete,
-                          expression: "editar__nome_enquete"
-                        }
-                      ],
-                      staticClass: "form-control",
-                      attrs: { type: "text", id: "nome_enquete", required: "" },
-                      domProps: { value: _vm.editar__nome_enquete },
-                      on: {
-                        input: function($event) {
-                          if ($event.target.composing) {
-                            return
-                          }
-                          _vm.editar__nome_enquete = $event.target.value
-                        }
-                      }
-                    })
-                  ]),
+              _c("form", [
+                _c("div", { staticClass: "mb-3" }, [
+                  _c(
+                    "label",
+                    {
+                      staticClass: "form-label",
+                      attrs: { for: "nome_enquete" }
+                    },
+                    [_vm._v("Nome da enquete")]
+                  ),
                   _vm._v(" "),
-                  _vm._l(_vm.respostas.data, function(resposta, index) {
-                    return _c(
-                      "div",
-                      { key: resposta.id, staticClass: "mb-3" },
-                      [
-                        _c(
-                          "label",
-                          {
-                            staticClass: "form-label",
-                            attrs: { for: "alternativa_1" }
-                          },
-                          [_vm._v(_vm._s(index + 1) + "ª Alternativa")]
-                        ),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.editar__nome_enquete,
+                        expression: "editar__nome_enquete"
+                      }
+                    ],
+                    staticClass: "form-control",
+                    attrs: { type: "text", id: "nome_enquete", required: "" },
+                    domProps: { value: _vm.editar__nome_enquete },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.editar__nome_enquete = $event.target.value
+                      }
+                    }
+                  })
+                ]),
+                _vm._v(" "),
+                _c(
+                  "table",
+                  { staticClass: "table" },
+                  _vm._l(_vm.respostas, function(resposta, index) {
+                    return _c("tbody", { key: resposta.id }, [
+                      _c("tr", [
+                        _c("th", { attrs: { scope: "row" } }, [
+                          _vm._v(_vm._s(index + 1))
+                        ]),
                         _vm._v(" "),
-                        _c("input", {
-                          staticClass: "form-control",
-                          attrs: { type: "text", value: "{respostas}}" }
-                        }),
+                        _c("td", [
+                          _vm._v(
+                            "\n                    " +
+                              _vm._s(resposta.alternativa) +
+                              " "
+                          ),
+                          _c("br"),
+                          _vm._v(" "),
+                          _c("span", { staticClass: "badge bg-primary" }, [
+                            _vm._v(
+                              "\n                      Aos\n                      " +
+                                _vm._s(resposta.created_at) +
+                                "\n                    "
+                            )
+                          ])
+                        ]),
                         _vm._v(" "),
-                        _c(
-                          "label",
-                          { staticClass: "form-label", attrs: { for: "" } },
-                          [_vm._v("Marcar a alternativa como a resposta")]
-                        ),
-                        _vm._v(" "),
-                        _c("input", {
-                          directives: [
+                        _c("td", [
+                          _c(
+                            "button",
                             {
-                              name: "model",
-                              rawName: "v-model",
-                              value: _vm.editar__resposta,
-                              expression: "editar__resposta"
-                            }
-                          ],
-                          attrs: { type: "radio", id: "one", value: "1" },
-                          domProps: {
-                            checked: _vm._q(_vm.editar__resposta, "1")
-                          },
-                          on: {
-                            change: function($event) {
-                              _vm.editar__resposta = "1"
-                            }
-                          }
-                        }),
-                        _vm._v(" "),
-                        _c("br")
-                      ]
-                    )
+                              staticClass: "btn btn-primary",
+                              attrs: { type: "button" },
+                              on: {
+                                click: function($event) {
+                                  return _vm.apagarResposta(resposta.id)
+                                }
+                              }
+                            },
+                            [
+                              _vm._v(
+                                "\n                      Apagar\n                    "
+                              )
+                            ]
+                          )
+                        ])
+                      ])
+                    ])
+                  }),
+                  0
+                ),
+                _vm._v(" "),
+                _c("div", { staticClass: "mb-3" }, [
+                  _c(
+                    "label",
+                    {
+                      staticClass: "form-label",
+                      attrs: { for: "alternativa_2" }
+                    },
+                    [_vm._v("Adicionar nova resposta")]
+                  ),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.nova_alternativa,
+                        expression: "nova_alternativa"
+                      }
+                    ],
+                    staticClass: "form-control",
+                    attrs: {
+                      type: "text",
+                      id: "nova_alternativa",
+                      required: ""
+                    },
+                    domProps: { value: _vm.nova_alternativa },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.nova_alternativa = $event.target.value
+                      }
+                    }
+                  })
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "mb-3" }, [
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.editar__resposta,
+                        expression: "editar__resposta"
+                      }
+                    ],
+                    attrs: { type: "radio", id: "one" },
+                    domProps: { checked: _vm._q(_vm.editar__resposta, null) },
+                    on: {
+                      change: function($event) {
+                        _vm.editar__resposta = null
+                      }
+                    }
                   }),
                   _vm._v(" "),
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-primary",
-                      attrs: { type: "submit" },
-                      on: {
-                        click: function($event) {
-                          $event.preventDefault()
-                          return _vm.criarEnquete.apply(null, arguments)
-                        }
+                  _c("label", { attrs: { for: "one" } }, [
+                    _vm._v("Marcar a alternativa como a resposta ")
+                  ])
+                ]),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-primary",
+                    attrs: { type: "submit" },
+                    on: {
+                      click: function($event) {
+                        $event.preventDefault()
+                        return _vm.adicionarAlternativa.apply(null, arguments)
                       }
-                    },
-                    [_vm._v("\n              Criar Enquete\n            ")]
-                  )
-                ],
-                2
-              )
+                    }
+                  },
+                  [_vm._v("\n              Salvar alternativa\n            ")]
+                ),
+                _vm._v(" "),
+                _c("hr"),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "text-center btn btn-primary",
+                    attrs: { type: "submit" },
+                    on: {
+                      click: function($event) {
+                        $event.preventDefault()
+                        return _vm.criarEnquete.apply(null, arguments)
+                      }
+                    }
+                  },
+                  [
+                    _vm._v(
+                      "\n              Salvar edição da enquete\n            "
+                    )
+                  ]
+                )
+              ])
             ])
           ])
         ]

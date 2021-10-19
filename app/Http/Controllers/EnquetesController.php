@@ -22,12 +22,28 @@ class EnquetesController extends Controller
         for ($i = 0; $i < 2; $i++) {
             $resposta = new Resposta();
             $resposta->enquete_id = $enquete->id;
-            $resposta->alternativa1 = request()->alternativa_1;
-            $resposta->alternativa2 = request()->alternativa_2;
+            if ($i == 0)
+                $resposta->alternativa = request()->alternativa_1;
+            if ($i == 1)
+                $resposta->alternativa = request()->alternativa_2;
             $resposta->save();
         }
         return 'ok';
     }
+
+    public function nova_alternativa()
+    {
+        $num_alternativas = request()->num_respostas;
+        $resposta = new Resposta();
+        $resposta->enquete_id = request()->enquete_id;
+        if ($num_alternativas == 2)
+            $resposta->alternativa = request()->nova_alternativa;
+
+        $resposta->save();
+
+        return 'ok';
+    }
+
     public function listar_enquetes()
     {
         $enquetes = Enquete::paginate();;

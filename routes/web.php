@@ -17,8 +17,13 @@ Route::get('/', function () {
 
 Auth::routes();
 
+//Requisições POST
+Route::post('nova_enquete', 'EnquetesController@nova_enquete');
+Route::post('nova_alternativa', 'EnquetesController@nova_alternativa');
+
+
+//Requisições GET
 Route::get('/home', 'HomeController@index')->name('home');
-Route::post('nova_enquete', 'EnquetesController@nova_enquete')->name('nova');
 Route::post('editar_enquete', 'EnquetesController@editar_enquete');
 Route::get('listar_enquetes', 'EnquetesController@listar_enquetes');
 Route::get('user_enquetes', 'EnquetesController@listar_enquetes');
