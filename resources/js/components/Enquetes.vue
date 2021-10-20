@@ -27,12 +27,12 @@
                     <span class="badge bg-primary rounded-pill">{{
                       enquete.tentativas
                     }}</span>
-                    <br>
+                    <br />
                     Erros:
                     <span class="badge bg-primary rounded-pill">{{
                       enquete.erros
                     }}</span>
-                    <br>
+                    <br />
                     Acertos:
                     <span class="badge bg-primary rounded-pill">{{
                       enquete.acertos
@@ -120,12 +120,67 @@
           <div class="card-body" v-show="mostrar_mensagem">
             <div v-show="mostrar_mensagem_parabens">
               <h1>Parabéns você respondeu correctamente a enquete!!!</h1>
+
+              <h3 class="text-center">Estatísticas da enquete</h3>
+
+              <div class="progress">
+                <div
+                  class="progress-bar bg-success"
+                  role="progressbar"
+                  :style="'width:' + responder__num_acertos + '%'"
+                  :aria-valuenow="responder__num_acertos"
+                  aria-valuemin="1"
+                  :aria-valuemax="responder__num_tentativa"
+                >
+                  {{ responder__num_acertos }}% de Acertos
+                </div>
+              </div>
+              <hr />
+              <div class="progress">
+                <div
+                  class="progress-bar bg-danger"
+                  role="progressbar"
+                  :style="'width:' + responder__num_erros + '%'"
+                  :aria-valuenow="responder__num_erros"
+                  aria-valuemin="1"
+                  :aria-valuemax="responder__num_tentativa"
+                >
+                  {{ responder__num_erros }}% de Erros
+                </div>
+              </div>
             </div>
             <div v-show="mostrar_mensagem_infelici">
               <h1>
                 Lamento, você não respondeu correctamente a enquete.<br />
                 Mais sorte da próxima.
               </h1>
+              <h3 class="text-center">Estatísticas da enquete</h3>
+
+              <div class="progress">
+                <div
+                  class="progress-bar bg-success"
+                  role="progressbar"
+                  :style="'width:' + responder__num_acertos + '%'"
+                  :aria-valuenow="responder__num_acertos"
+                  aria-valuemin="1"
+                  :aria-valuemax="responder__num_tentativa"
+                >
+                  {{ responder__num_acertos }}% de Acertos
+                </div>
+              </div>
+              <hr />
+              <div class="progress">
+                <div
+                  class="progress-bar bg-danger"
+                  role="progressbar"
+                  :style="'width:' + responder__num_erros + '%'"
+                  :aria-valuenow="responder__num_erros"
+                  aria-valuemin="1"
+                  :aria-valuemax="responder__num_tentativa"
+                >
+                  {{ responder__num_erros }}% de Erros
+                </div>
+              </div>
             </div>
             <button
               @click.prevent="cancelar"
@@ -157,6 +212,9 @@ export default {
       responder__resposta: "false",
       responder__enquete_id: "",
       responder__nome_enquete: "",
+      responder__num_acertos: 0,
+      responder__num_erros: 0,
+      responder__num_tentativas: 0,
       responder__num_respostas: 0,
       enquetes: {},
       respostas: {},
@@ -200,6 +258,9 @@ export default {
       this.responder__enquete_id = "";
       this.responder__nome_enquete = "";
       this.responder__num_respostas = 0;
+      this.responder__num_acertos = 0;
+      this.responder__num_erros = 0;
+      this.responder__num_tentativas = 0;
       this.getResults();
     },
     // Our method to GET results from a Laravel endpoint
@@ -226,6 +287,10 @@ export default {
         this.responder__nome_enquete = response.data.nome;
         this.responder__num_respostas = response.data.num_respostas;
         this.responder__enquete_id = enquete_id;
+
+        this.responder__num_acertos = response.data.acertos * 10;
+        this.responder__num_erros = response.data.erros * 10;
+        this.responder__num_tentativas = response.data.tentativas * 10;
       });
     },
   },

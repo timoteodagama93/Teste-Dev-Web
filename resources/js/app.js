@@ -10,6 +10,7 @@ import Vue from 'vue';
 import Enquetes from './components/Enquetes.vue';
 import UserHome from './components/UserHome.vue';
 import LaravelVuePagination from 'laravel-vue-pagination';
+import SocialSharing from 'vue-social-sharing';
 
 /**
  * The following block of code may be used to automatically register your
@@ -26,6 +27,7 @@ Vue.component('example-component', require('./components/ExampleComponent.vue'))
 Vue.component('enquetes', Enquetes);
 Vue.component('user-home', UserHome);
 Vue.component('pagination', LaravelVuePagination);
+Vue.component('social-sharing', SocialSharing);
 
 
 
@@ -38,8 +40,11 @@ Vue.component('pagination', LaravelVuePagination);
 
 const app = new Vue({
     el: '#app',
-});
+}); 
   
 
+
+app.use(SocialSharing);
+Vue.use(SocialSharing);
 
 

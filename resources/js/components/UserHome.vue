@@ -110,14 +110,20 @@
                     >
                       Editar
                     </button>
-                    <button
-                      type="button"
-                      class="btn btn-primary"
-                      id="show-modal"
-                      @click="apagarEnquete(enquete.id)"
+
+                    <social-sharing
+                      url="https://nzeyee.com/"
+                      title="Nzeyee"
+                      description="Uma mídia e midia social que atende aos seus anseios."
+                      hashtags="nzeyee,entretenimento,musica"
+                      inline-template 
                     >
-                      Apagar
-                    </button>
+                      <div>
+                        <network network="email"> Email </network>
+                        <network network="facebook"> Facebook </network>
+                        <network network="linkedin"> LinkedIn </network>
+                      </div>
+                    </social-sharing>
                   </td>
                 </tr>
               </tbody>
@@ -135,6 +141,15 @@
         <div class="card">
           <div class="card-header">A editar a enquete</div>
           <div class="card-body">
+            <button
+              type="button"
+              class="btn btn-primary"
+              id="show-modal"
+              @click="apagarEnquete"
+            >
+              Apagar a Enquete
+            </button>
+            <hr />
             <form>
               <div class="mb-3">
                 <label for="nome_enquete" class="form-label"
@@ -282,7 +297,7 @@ export default {
       });
     },
     //Cancelar a edição da enquete
-    cancelarEdicao() { 
+    cancelarEdicao() {
       this.editar__enquete_id = "";
       this.editar__nome_enquete = "";
       this.nova_alternativa = "";
@@ -310,10 +325,12 @@ export default {
         });
     },
     //Apagar Enquete
-    apagarEnquete(enquete_id) {
-      axios.get("apagar_enquete/" + enquete_id).then((response) => {
-        this.getRespostas(enquete_id);
-      });
+    apagarEnquete() {
+      axios
+        .get("apagar_enquete/" + this.editar__enquete_id)
+        .then((response) => {
+          this.getRespostas(enquete_id);
+        });
     },
     //Apagar Resposta
     apagarResposta(resposta_id) {
