@@ -116,13 +116,13 @@
                       title="Nzeyee"
                       description="Uma mídia e midia social que atende aos seus anseios."
                       hashtags="nzeyee,entretenimento,musica"
-                      inline-template 
+                      inline-template
+                      twitterUser="youyuxi" 
                     >
-                      <div>
-                        <network network="email"> Email </network>
-                        <network network="facebook"> Facebook </network>
-                        <network network="linkedin"> LinkedIn </network>
-                      </div>
+                    <div>
+                      <i class="fab fah fa-lg fa-twitter"></i>
+                      <span>Partilhar no Twitter</span>
+                    </div>
                     </social-sharing>
                   </td>
                 </tr>
@@ -381,4 +381,3 @@ export default {
   },
 };
 </script>
-

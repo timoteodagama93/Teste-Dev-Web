@@ -42,9 +42,6 @@ const app = new Vue({
     el: '#app',
 }); 
   
-
-
-app.use(SocialSharing);
 Vue.use(SocialSharing);
 
 

@@ -39961,38 +39961,33 @@ var render = function() {
                                   title: "Nzeyee",
                                   description:
                                     "Uma mídia e midia social que atende aos seus anseios.",
-                                  hashtags: "nzeyee,entretenimento,musica"
+                                  hashtags: "nzeyee,entretenimento,musica",
+                                  twitterUser: "youyuxi"
                                 },
                                 inlineTemplate: {
                                   render: function() {
                                     var _vm = this
                                     var _h = _vm.$createElement
                                     var _c = _vm._self._c || _h
-                                    return _c(
-                                      "div",
-                                      [
-                                        _c(
-                                          "network",
-                                          { attrs: { network: "email" } },
-                                          [_vm._v(" Email ")]
-                                        ),
-                                        _vm._v(" "),
-                                        _c(
-                                          "network",
-                                          { attrs: { network: "facebook" } },
-                                          [_vm._v(" Facebook ")]
-                                        ),
-                                        _vm._v(" "),
-                                        _c(
-                                          "network",
-                                          { attrs: { network: "linkedin" } },
-                                          [_vm._v(" LinkedIn ")]
-                                        )
-                                      ],
-                                      1
-                                    )
+                                    return _vm._m(0, true)
                                   },
-                                  staticRenderFns: []
+                                  staticRenderFns: [
+                                    function() {
+                                      var _vm = this
+                                      var _h = _vm.$createElement
+                                      var _c = _vm._self._c || _h
+                                      return _c("div", [
+                                        _c("i", {
+                                          staticClass:
+                                            "fab fah fa-lg fa-twitter"
+                                        }),
+                                        _vm._v(" "),
+                                        _c("span", [
+                                          _vm._v("Partilhar no Twitter")
+                                        ])
+                                      ])
+                                    }
+                                  ]
                                 }
                               })
                             ],
@@ -52632,7 +52627,6 @@ vue__WEBPACK_IMPORTED_MODULE_4__["default"].component('social-sharing', (vue_soc
 var app = new vue__WEBPACK_IMPORTED_MODULE_4__["default"]({
   el: '#app'
 });
-app.use((vue_social_sharing__WEBPACK_IMPORTED_MODULE_3___default()));
 vue__WEBPACK_IMPORTED_MODULE_4__["default"].use((vue_social_sharing__WEBPACK_IMPORTED_MODULE_3___default()));
 })();
 
